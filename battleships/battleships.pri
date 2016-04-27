@@ -1,0 +1,1 @@
+SOURCES += 'battleships/main.cpp' \
