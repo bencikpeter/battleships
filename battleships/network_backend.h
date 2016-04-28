@@ -42,7 +42,6 @@ namespace network {
             //socket = ip::udp::socket(io_service, rec_endpoint);
             //if(!socket.is_open()) socket.open(ip::udp::v4());
             //JUST TEST
-            socket.send_to(asio::buffer("aloha",5), rec_endpoint);
         }
         
         ~NetworkManager(){
