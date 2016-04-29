@@ -8,13 +8,28 @@
 
 #include <iostream>
 #include "SDL.h"
-#include "SDL_net.h"
+#include "logicevent.h"
+#include <future>
+
+int func() {
+    LogicEvent event;
+    return event.getEventType();
+}
 
 int main(){
     using std::cout;
     using std::endl;
-
+    using std::cerr;
     SDL_Init(SDL_INIT_EVERYTHING);
+
+    const Uint32 logicEventType = SDL_RegisterEvents(1);
+
+    if ( logicEventType != (Uint32)-1 ) {
+        LogicEvent::setType( logicEventType );
+    } else {
+        cerr << "Could not initialize business logic event";
+        exit(1);
+    }
 
     SDL_Window* window;
     window = SDL_CreateWindow( "Battleships !",
@@ -39,20 +54,22 @@ int main(){
     SDL_Event event;
     bool running = true;
 
+    std::future<int> x;
+
     while ( running ) {
-        while( SDL_PollEvent( &event ) ) {
+        while( SDL_WaitEvent( &event ) ) {
             if ( event.type == SDL_QUIT ) {
                 running = false;
                 break;
             }
+            if ( event.type == logicEventType ) {
+                cout << "Heureka, got message from logic !" << endl;
+                cout << x.get() << endl;
+            }
+            x = std::async( std::launch::async, func );
         }
-
     }
 
     SDL_DestroyWindow( window );
-
-    SDLNet_Init();
-
-    SDLNet_Quit();
     SDL_Quit();
 }
