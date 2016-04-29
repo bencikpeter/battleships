@@ -13,12 +13,24 @@
 
 #include <iostream>
 #include <vector>
+#include <exception>
 
 #include "../asio-1.10.6/include/asio.hpp"
 
 namespace network {
     
     namespace ip = asio::ip;
+    
+    /*class NetworkException: public std::exception {
+        
+        const char* message;
+        
+        NetworkException(const std::exception& other): message(other.what()) {}
+        
+        virtual const char* what() const override {
+            return message;
+        }
+    };*/
     
     
     class NetworkManager {
@@ -39,36 +51,54 @@ namespace network {
             ip::udp::resolver resolver(io_service);
             ip::udp::resolver::query query(ip::udp::v4(), ip_address, "1337");
             rec_endpoint = *resolver.resolve(query);
-            //socket = ip::udp::socket(io_service, rec_endpoint);
-            //if(!socket.is_open()) socket.open(ip::udp::v4());
-            //JUST TEST
+            initialize();
         }
+        
+        NetworkManager(): io_service(), socket(io_service,ip::udp::endpoint(ip::udp::v4(), 0)) { }
         
         ~NetworkManager(){
             socket.close();
         }
         
-        void initialize() {
-            send_buf = {0}; //define some kind of init message
-            socket.send_to(asio::buffer(send_buf), rec_endpoint);
+        
+        void initialize(std::string const & ip_address) {
+            try {
+                send_buf = {ip_address}; //define some kind of init message
+                socket.send_to(asio::buffer(send_buf), rec_endpoint);
+            }catch (std::exception& ex ) {
+                /*DO STH */
+            }
+            
+        }
+        
+        bool waitForIinit(){
+            listener();
+            if (isInitMessage(rec_buf)) {
+                ip::udp::resolver resolver(io_service);
+                ip::udp::resolver::query query(ip::udp::v4(), rec_buf, "1337");
+                rec_endpoint = *resolver.resolve(query);
+                return true;
+            }
+            return false;
+
         }
         
         void sender(std::vector<char> message){
-            send_buf = message;
-            socket.send_to(asio::buffer(send_buf), rec_endpoint);
+            try {
+                send_buf = message;
+                socket.send_to(asio::buffer(send_buf), rec_endpoint);
+            } catch (std::exception& ex ) {
+               /*DO STH */
+            }
         }
         
         std::vector<char> listener(){
             size_t len = socket.receive_from(asio::buffer(rec_buf), send_endpoint);
-            if (isInitMessage(rec_buf)) {
-                return rec_buf;
-            } else{
-                return rec_buf;
-            }
+            return rec_buf;
         }
     private:
         bool isInitMessage(std::vector<char> message){
-            return message.size() == 1 && message[0] == 0;
+            /*MEETS THE IP FORMAT */
         }
         
     };
