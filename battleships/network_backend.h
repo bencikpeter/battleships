@@ -9,9 +9,7 @@
 #ifndef network_backend_h
 #define network_backend_h
 
-#include <stdio>
 #include <vector>
-
 #include "asio-1.10.6/include/asio.hpp"
 
 namespace network {
