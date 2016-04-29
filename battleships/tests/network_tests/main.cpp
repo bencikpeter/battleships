@@ -13,7 +13,7 @@
 
 int main(){
     network::NetworkManager manager("localhost");
-    std::vector<char> message = {'m','e','s','s','a','g','e'};
+    std::string message = "message";
     //manager.initialize();
     manager.sender(message);
     

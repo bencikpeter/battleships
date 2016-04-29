@@ -14,6 +14,7 @@
 #include <iostream>
 #include <vector>
 #include <exception>
+#include <regex>
 
 #include "../asio-1.10.6/include/asio.hpp"
 
@@ -51,7 +52,6 @@ namespace network {
             ip::udp::resolver resolver(io_service);
             ip::udp::resolver::query query(ip::udp::v4(), ip_address, "1337");
             rec_endpoint = *resolver.resolve(query);
-            initialize();
         }
         
         NetworkManager(): io_service(), socket(io_service,ip::udp::endpoint(ip::udp::v4(), 0)) { }
@@ -61,12 +61,13 @@ namespace network {
         }
         
         
-        void initialize(std::string const & ip_address) {
+        bool initialize(std::string const & ip_address) {
             try {
-                send_buf = {ip_address}; //define some kind of init message
+                send_buf = toCharVector(ip_address); //define some kind of init message
                 socket.send_to(asio::buffer(send_buf), rec_endpoint);
+                return true;
             }catch (std::exception& ex ) {
-                /*DO STH */
+                return false;
             }
             
         }
@@ -75,7 +76,7 @@ namespace network {
             listener();
             if (isInitMessage(rec_buf)) {
                 ip::udp::resolver resolver(io_service);
-                ip::udp::resolver::query query(ip::udp::v4(), rec_buf, "1337");
+                ip::udp::resolver::query query(ip::udp::v4(), toString(rec_buf), "1337");
                 rec_endpoint = *resolver.resolve(query);
                 return true;
             }
@@ -83,23 +84,36 @@ namespace network {
 
         }
         
-        void sender(std::vector<char> message){
+        void sender(std::string message){
             try {
-                send_buf = message;
+                send_buf = toCharVector(message);
                 socket.send_to(asio::buffer(send_buf), rec_endpoint);
             } catch (std::exception& ex ) {
                /*DO STH */
             }
         }
         
-        std::vector<char> listener(){
+        std::string listener(){
             size_t len = socket.receive_from(asio::buffer(rec_buf), send_endpoint);
-            return rec_buf;
+            return toString(rec_buf);
         }
     private:
         bool isInitMessage(std::vector<char> message){
             /*MEETS THE IP FORMAT */
+            return true;
         }
+        
+        std::vector<char> toCharVector(std::string const &string){
+            //parse string into vector of chars
+            return std::vector<char>();
+        }
+        
+        std::string toString(std::vector<char>){
+            //combine vector<char> into string
+            return std::string();
+        }
+        
+        
         
     };
 }
