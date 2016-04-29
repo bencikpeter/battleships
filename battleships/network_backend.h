@@ -47,20 +47,34 @@ namespace network {
         
         
     public: /*API*/
+        /**
+         * Constructor for side knowing the other IP
+         * inits all the network properties
+         * bool initialize(std::string const & ip_address) must be called  with my local adress to establish connection
+         * @param ip_address IP address of the other side
+         */
         NetworkManager(std::string const & ip_address): io_service(), socket(io_service,ip::udp::endpoint(ip::udp::v4(), 0)) {
             
             ip::udp::resolver resolver(io_service);
             ip::udp::resolver::query query(ip::udp::v4(), ip_address, "1337");
             rec_endpoint = *resolver.resolve(query);
         }
-        
+        /**
+         * Constructor for side not knowing the other IP
+         * inits the necessary network properties
+         * bool waitForIinit() must be called to establish conection
+         */
         NetworkManager(): io_service(), socket(io_service,ip::udp::endpoint(ip::udp::v4(), 0)) { }
         
         ~NetworkManager(){
             socket.close();
         }
         
-        
+        /**
+         * informing other party about my adress
+         * @param ip_address my local adress
+         * @returns true if succesfull
+         */
         bool initialize(std::string const & ip_address) {
             try {
                 send_buf = toCharVector(ip_address); //define some kind of init message
@@ -71,7 +85,10 @@ namespace network {
             }
             
         }
-        
+        /**
+         * waiting for other party to reveal it's IP address
+         * @returns true of succesfull
+         */
         bool waitForIinit(){
             listener();
             if (isInitMessage(rec_buf)) {
@@ -83,16 +100,24 @@ namespace network {
             return false;
 
         }
-        
-        void sender(std::string message){
+        /**
+         * sends a message to other party
+         * @param messasge
+         * @returns true if sended succesfully
+         */
+        bool sender(std::string message){
             try {
                 send_buf = toCharVector(message);
                 socket.send_to(asio::buffer(send_buf), rec_endpoint);
+                return true
             } catch (std::exception& ex ) {
-               /*DO STH */
+               return false
             }
         }
-        
+        /**
+         * waits for a message from the other party
+         * @returns message recieved message
+         */
         std::string listener(){
             size_t len = socket.receive_from(asio::buffer(rec_buf), send_endpoint);
             return toString(rec_buf);
