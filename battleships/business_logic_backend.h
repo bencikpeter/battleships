@@ -154,14 +154,14 @@ private:
         return vec;
     }
 
-    std::pair<char,char> decodePair(std::vector<char> &vec){
+    std::pair<char,char> decodePair(const std::vector<char> &vec){
         std::pair<char,char> pair;
         pair.first = vec[0];
         pair.second = vec[1];
         return pair;
     }
 
-    void decodeEnemyLayout(std::vector<char> &vec){
+    void decodeEnemyLayout(const std::vector<char> &vec){
         std::lock_guard<std::mutex> guard1(mutexEnemy);
         for(int i = 0; i < 10; i++){
             for(int j = 0; j < 10; j++){
