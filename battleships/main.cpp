@@ -20,28 +20,50 @@ int main(){
     using std::cout;
     using std::endl;
     using std::cerr;
-    SDL_Init(SDL_INIT_EVERYTHING);
+
+    const int width = 400;
+    const int height = 200;
+
+    if ( SDL_Init(SDL_INIT_EVERYTHING) ) {
+        cout << "Failed to initialize SDL : " << SDL_GetError() << endl;
+        return 1;
+    }
 
     const Uint32 logicEventType = SDL_RegisterEvents(1);
 
     if ( logicEventType != (Uint32)-1 ) {
         LogicEvent::setType( logicEventType );
     } else {
-        cerr << "Could not initialize business logic event";
-        exit(1);
+        cerr << "Could not initialize business logic event : " << SDL_GetError() << endl;
+        return 1;
     }
 
     SDL_Window* window;
     window = SDL_CreateWindow( "Battleships !",
                                SDL_WINDOWPOS_UNDEFINED,
                                SDL_WINDOWPOS_UNDEFINED,
-                               400, // window width
-                               200, // window height
+                               width, // window width
+                               height, // window height
                                SDL_WINDOW_RESIZABLE );
 
     if ( window == nullptr ) {
-        cout << "There was error initializing the window !" << endl;
+        cout << "There was error initializing the window : " << SDL_GetError() << endl;
+        return 1;
     }
+
+    SDL_Renderer* renderer = SDL_CreateRenderer( window, -1, SDL_RENDERER_ACCELERATED );
+
+    if ( renderer == nullptr ) {
+        cout << "Error initializing renderer : " << SDL_GetError() << endl;
+        return 1;
+    }
+
+    SDL_RenderSetLogicalSize( renderer, width, height );
+    SDL_SetRenderDrawColor( renderer, 255, 0, 0, 255 );
+
+    SDL_RenderClear( renderer );
+    SDL_RenderPresent( renderer );
+
 
     SDL_Surface* screen = SDL_GetWindowSurface( window );
 
@@ -65,8 +87,16 @@ int main(){
             if ( event.type == logicEventType ) {
                 cout << "Heureka, got message from logic !" << endl;
                 cout << x.get() << endl;
+                SDL_RenderClear( renderer );
+                SDL_RenderPresent( renderer );
             }
-            x = std::async( std::launch::async, func );
+            if ( event.type == SDL_KEYDOWN ) {
+                switch ( event.key.keysym.scancode ) {
+                case SDL_SCANCODE_KP_0:
+                    x = std::async( std::launch::async, func );
+                    break;
+                }
+            }
         }
     }
 
