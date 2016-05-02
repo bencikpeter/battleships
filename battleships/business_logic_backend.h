@@ -16,31 +16,34 @@
 
 namespace logic {
 
+
+enum CellType { WATER_NOT_SHOT, WATER_SHOT, SHIP_NOT_SHOT, SHIP_SHOT };
+enum GameEnd { WON, LOST, PLAY };
 /**
  * @brief The Matrix class holds ships layout and always copies it when created so GUI can work with it whithout mutex locking
  */
 class Matrix{
-    char** matrix;
+    CellType** matrix;
 public:
     Matrix() = delete;
-    Matrix(char** a): matrix(new char*[10]) {
+    Matrix(CellType** a): matrix(new CellType*[10]) {
         for (int i = 0; i < 10; i++){
-            matrix[i] = new char[10];
+            matrix[i] = new CellType[10];
             for (int j = 0; j < 10; j++){
                 matrix[i][j] = a[i][j];
             }
         }
     }
-    Matrix(const Matrix& o): matrix(new char*[10]) {
+    Matrix(const Matrix& o): matrix(new CellType*[10]) {
         for (int i = 0; i < 10; i++){
-            matrix[i] = new char[10];
+            matrix[i] = new CellType[10];
             for (int j = 0; j < 10; j++){
                 matrix[i][j] = o.matrix[i][j];
             }
         }
     }
 
-    char** get(){return matrix;}
+    CellType** get(){return matrix;}
 
     const Matrix& operator= (Matrix o){
         std::swap(o.matrix, matrix);
@@ -58,8 +61,10 @@ public:
 
 class Logic {
 private:
-    char** myShips;
-    char** enemyShips;
+    CellType** myShips;
+    CellType** enemyShips;
+    int countMy;
+    int countEnemy;
     network::NetworkManager* net;
     std::mutex mutexMy;
     std::mutex mutexEnemy;
@@ -76,7 +81,7 @@ public:
      * @param length length of ship
      * @return true if ship was legaly placed
      */
-    bool insertShip(char x, char y, bool horizontal, char length);//is header ok?
+    bool insertShip(int x, int y, bool horizontal, int length);
 
     /**
      * @brief sendMyLayout when finished layout this function is called with std::async and before that getEnemyShipLayout() is also called to get enemy layout
@@ -91,16 +96,33 @@ public:
      * @param y index from top (0) to bottom (9)
      * @return true if it was a hit false if you shot water
      */
-    bool shoot(char x, char y){//should i save where was it shot
+    bool shoot(int x, int y){
         net->sender(encodeCoords(x,y));
+        std::lock_guard<std::mutex> guard(mutexEnemy);
+        if (enemyShips[x][y] >= SHIP_NOT_SHOT) {
+            enemyShips[x][y] = SHIP_SHOT;
+            countEnemy--;
+            return true;
+        }
+        enemyShips[x][y] = WATER_SHOT;
+        return false;
     }
 
     /**
      * @brief getEnemyShot called with std::async
      * @return pair.first is x coordinate pair.second is y
      */
-    std::pair<char,char> getEnemyShot(){//same question
+    std::pair<int,int> getEnemyShot(){
         auto a = decodePair(net->listener());
+        int x = a.first;
+        int y = a.second;
+        std::lock_guard<std::mutex> guard(mutexMy);
+        if (myShips[x][y] >= SHIP_NOT_SHOT) {
+            myShips[x][y] = SHIP_SHOT;
+            countMy--;
+        }
+        else
+            myShips[x][y] = WATER_SHOT;
         return a;
     }
 
@@ -110,7 +132,16 @@ public:
      */
     Matrix getEnemyShipLayout(){
         decodeEnemyLayout(net->listener());
-        std::lock_guard<std::mutex> guard1(mutexEnemy);
+        std::lock_guard<std::mutex> guard(mutexEnemy);
+        return Matrix(enemyShips);
+    }
+
+    /**
+     * @brief getEnemyShipsWhithShots called during game whithout std::async
+     * @return grid of enemy ships with positions shot at
+     */
+    Matrix getEnemyShipsWhithShots(){
+        std::lock_guard<std::mutex> guard(mutexEnemy);
         return Matrix(enemyShips);
     }
 
@@ -119,7 +150,7 @@ public:
      * @return my layout
      */
     Matrix getMyShips(){
-        std::lock_guard<std::mutex> guard1(mutexMy);
+        std::lock_guard<std::mutex> guard(mutexMy);
         return Matrix(myShips);
     }
 
@@ -130,15 +161,28 @@ public:
      */
     bool connect(std::string ip){
         net = new network::NetworkManager(ip);
-        net->initialize();
+        return net->initialize();
+    }
+
+    bool host(){
+        net = new network::NetworkManager();
+        return net->waitForIinit();
+    }
+
+    GameEnd checkIfGameEnds(){
+        std::lock_guard<std::mutex> guard1(mutexMy);
+        std::lock_guard<std::mutex> guard2(mutexEnemy);
+        if (countMy == 0) return LOST;
+        if (countEnemy == 0) return WON;
+        return PLAY;
     }
 
 
 private:
-    std::vector<char> encodeCoords(char x, char y){
+    std::vector<char> encodeCoords(int x, int y){
         std::vector<char> vec;
-        vec.push_back(x);
-        vec.push_back(y);
+        vec.push_back(static_cast<char>(x));
+        vec.push_back(static_cast<char>(y));
         return vec;
     }
 
@@ -148,26 +192,39 @@ private:
         std::lock_guard<std::mutex> guard1(mutexMy);
         for(int i = 0; i < 10; i++){
             for(int j = 0; j < 10; j++){
-                vec[i*10+j] = myShips[i][j];
+                vec[i*10+j] = static_cast<char>(myShips[i][j]);
             }
         }
         return vec;
     }
 
-    std::pair<char,char> decodePair(const std::vector<char> &vec){
-        std::pair<char,char> pair;
-        pair.first = vec[0];
-        pair.second = vec[1];
+    std::pair<int,int> decodePair(const std::vector<char> &vec){
+        std::pair<int,int> pair;
+        pair.first = static_cast<int>(vec[0]);
+        pair.second = static_cast<int>(vec[1]);
         return pair;
     }
 
     void decodeEnemyLayout(const std::vector<char> &vec){
-        std::lock_guard<std::mutex> guard1(mutexEnemy);
+        std::lock_guard<std::mutex> guard(mutexEnemy);
         for(int i = 0; i < 10; i++){
             for(int j = 0; j < 10; j++){
-                enemyShips[i][j] = vec[i*10+j];
+                enemyShips[i][j] = static_cast<CellType>(vec[i*10+j]);
             }
         }
+    }
+
+    bool checkWaterAroundCell(int x, int y){
+        bool a = myShips[x][y] == WATER_NOT_SHOT;
+        if (x + 1 < 10) a = a && myShips[x+1][y] == WATER_NOT_SHOT;
+        if (x - 1 >= 0) a = a && myShips[x-1][y] == WATER_NOT_SHOT;
+        if (y + 1 < 10) a = a && myShips[x][y+1] == WATER_NOT_SHOT;
+        if (y - 1 >= 0) a = a && myShips[x][y-1] == WATER_NOT_SHOT;
+        if (x + 1 < 10 && y + 1 < 10) a = a && myShips[x+1][y+1] == WATER_NOT_SHOT;
+        if (x + 1 < 10 && y - 1 >= 0) a = a && myShips[x+1][y-1] == WATER_NOT_SHOT;
+        if (x - 1 >= 0 && y + 1 < 10) a = a && myShips[x-1][y+1] == WATER_NOT_SHOT;
+        if (x - 1 >= 0 && y - 1 >= 0) a = a && myShips[x-1][y-1] == WATER_NOT_SHOT;
+        return a;
     }
 };
 
@@ -183,17 +240,44 @@ Logic::~Logic(){
     delete net;
 }
 
-Logic::Logic(): myShips(new char*[10]), enemyShips(new char*[10]){
+Logic::Logic(): myShips(new CellType*[10]), enemyShips(new CellType*[10]), countMy(31), countEnemy(31), net(nullptr){
     std::lock_guard<std::mutex> guard1(mutexMy);
     std::lock_guard<std::mutex> guard2(mutexEnemy);
     for (int i = 0; i < 10; i++){
-        myShips[i] = new char[10];
-        enemyShips[i] = new char[10];
+        myShips[i] = new CellType[10];
+        enemyShips[i] = new CellType[10];
         for (int j = 0; j < 10; j++){
-            myShips[i][j] = 0;
-            enemyShips[i][j] = 0;
+            myShips[i][j] = WATER_NOT_SHOT;
+            enemyShips[i][j] = WATER_NOT_SHOT;
         }
     }
+}
+
+bool Logic::insertShip(int x, int y, bool horizontal, int length){
+    bool a = true;
+    std::lock_guard<std::mutex> guard(mutexMy);
+    if (horizontal){
+        if (x + length < 10){
+            for (int i = x; i < x+length; i++)
+                a = a && checkWaterAroundCell(i,y);
+        }
+        else a = false;
+        if (a)
+            for (int i = x; i < x+length; i++)
+                myShips[i][y] = SHIP_NOT_SHOT;
+
+    }
+    else{
+        if (y + length < 10){
+            for (int i = y; i < y+length; i++)
+                a = a && checkWaterAroundCell(x,i);
+        }
+        else a = false;
+        if (a)
+            for (int i = y; i < y+length; i++)
+                myShips[x][i] = SHIP_NOT_SHOT;
+    }
+    return a;
 }
 }
 #endif /* business_logic_backend_h */
