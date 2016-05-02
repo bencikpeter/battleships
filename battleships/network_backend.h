@@ -125,7 +125,9 @@ namespace network {
     private: //TEST THIS STUFF
         bool isInitMessage(std::vector<char> message){
             /*MEETS THE IP FORMAT */
-            return true;
+            std::string toBeTested = toString(message);
+            std::regex reg ("^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$");
+            return std::regex_match(toBeTested,reg);
         }
         
         std::vector<char> toCharVector(std::string const &string){
