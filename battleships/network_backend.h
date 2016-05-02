@@ -122,7 +122,7 @@ namespace network {
             size_t len = socket.receive_from(asio::buffer(rec_buf), send_endpoint);
             return toString(rec_buf);
         }
-    private:
+    private: //TEST THIS STUFF
         bool isInitMessage(std::vector<char> message){
             /*MEETS THE IP FORMAT */
             return true;
@@ -138,9 +138,40 @@ namespace network {
             return std::string();
         }
         
-        
+        std::string
         
     };
+    
+    std::string getMyIPAddress(){
+
+  struct ifaddrs * addresses = nullptr;
+  struct ifaddrs * addressTemp=NULL;
+  void * tmpAddrPtr=NULL;
+  
+  getifaddrs(&ifAddrStruct);
+
+  for(addressTemp = addresses; addressTemp != nullptr; addressTemp = addressTemp->ifa_next){
+    if (!ifa->ifa_addr) {
+      continue;
+    }
+    if (ifa->ifa_addr->sa_family == AF_INET){ //if valid IPv4
+      tmpAddrPtr=&((struct sockaddr_in *)ifa->ifa_addr)->sin_addr;
+      char addressBuffer[INET_ADDRSTRLEN];
+      inet_ntop(AF_INET, tmpAddrPtr, addressBuffer, INET_ADDRSTRLEN);
+      std::string textAddress;
+      if(addressBuffer!=nullptr) textAddress(addressBuffer);
+      if (isLocalAddress(textAddress)) {
+        if (ifAddrStruct!=NULL) freeifaddrs(ifAddrStruct);  
+        return textAddress;
+      }
+    }
+  }
+  
+  if (ifAddrStruct!=NULL) freeifaddrs(ifAddrStruct);
+  
+}
+
+bool isLocalAddress(std::string const& address);
 }
 
 #endif /* network_backend_h */
