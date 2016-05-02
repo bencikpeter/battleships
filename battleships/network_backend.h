@@ -76,12 +76,12 @@ namespace network {
         
         /**
          * informing other party about my adress
-         * @param ip_address my local adress
          * @returns true if succesfull
          */
-        bool initialize(std::string const & ip_address) {
+        bool initialize() {
             try {
-                send_buf = toCharVector(ip_address); //define some kind of init message
+                std::string ip_address = getMyIPAddress();
+                send_buf = toCharVector(ip_address);
                 socket.send_to(asio::buffer(send_buf), rec_endpoint);
                 return true;
             }catch (std::exception& ex ) {
