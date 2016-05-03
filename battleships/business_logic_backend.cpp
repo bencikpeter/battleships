@@ -1,6 +1,7 @@
 #include "business_logic_backend.h"
 
-Logic::~Logic(){
+
+logic::Logic::~Logic(){
     std::lock_guard<std::mutex> guard1(mutexMy);
     std::lock_guard<std::mutex> guard2(mutexEnemy);
     for (int i = 0; i < 10; i++){
@@ -12,7 +13,7 @@ Logic::~Logic(){
     delete net;
 }
 
-Logic::Logic(): myShips(new CellType*[10]), enemyShips(new CellType*[10]), countMy(31), countEnemy(31), net(nullptr){
+logic::Logic::Logic(): myShips(new CellType*[10]), enemyShips(new CellType*[10]), countMy(31), countEnemy(31), net(nullptr){
     std::lock_guard<std::mutex> guard1(mutexMy);
     std::lock_guard<std::mutex> guard2(mutexEnemy);
     for (int i = 0; i < 10; i++){
@@ -25,7 +26,7 @@ Logic::Logic(): myShips(new CellType*[10]), enemyShips(new CellType*[10]), count
     }
 }
 
-bool Logic::insertShip(int x, int y, bool horizontal, int length){//doplnit pocet
+bool logic::Logic::insertShip(int x, int y, bool horizontal, int length){//doplnit pocet
     bool a = true;
     std::lock_guard<std::mutex> guard(mutexMy);
     if (horizontal){
@@ -52,7 +53,7 @@ bool Logic::insertShip(int x, int y, bool horizontal, int length){//doplnit poce
     return a;
 }
 
-
+/*
 void logic::Logic::sendMyLayout(){
     net->sender(encodeMyLayout());
 }
@@ -111,7 +112,7 @@ bool logic::Logic::host(std::atomic<bool> &a){
 
 bool logic::Logic::isIpValid(std::__cxx11::string ip){
     return true;
-}
+}*/
 
 logic::GameEnd logic::Logic::checkIfGameEnds(){
     std::lock_guard<std::mutex> guard1(mutexMy);
