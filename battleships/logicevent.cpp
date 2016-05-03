@@ -8,16 +8,15 @@ unsigned int LogicEvent::getEventType()
     return _eventType;
 }
 
-LogicEvent::LogicEvent()
-{
-
-}
+LogicEvent::LogicEvent(MethodCode methodCode):methodCode( methodCode )
+{ }
 
 LogicEvent::~LogicEvent()
 {
     SDL_Event event;
     SDL_zero( event );
     event.type = _eventType;
+    event.user.code = static_cast<int>(methodCode);
     SDL_PushEvent( &event );
 }
 
