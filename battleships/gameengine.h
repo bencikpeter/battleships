@@ -6,6 +6,7 @@
 #include "SDL.h"
 #include "SDL_ttf.h"
 #include <stack>
+#include "business_logic_backend.h"
 
 class GameScene;
 
@@ -66,6 +67,8 @@ public:
     bool isRunning() const;
 
     TTF_Font *font;
+
+    logic::Logic logic;
 
 private:
     SDL_Window* window;

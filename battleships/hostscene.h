@@ -11,6 +11,8 @@ private:
     static HostScene hostScene;
     SDL_Event event;
     std::vector<MenuItem> menu;
+    std::future<bool> host;
+
 
     void renderHostScene( GameEngine *engine, SDL_Event &event );
 
