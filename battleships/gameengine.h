@@ -1,12 +1,14 @@
 #ifndef GAMEENGINE_H
 #define GAMEENGINE_H
 
-#include "gamescene.h"
 #include "gamerenderer.h"
 #include "logicevent.h"
-#include "business_logic_backend.h"
 #include "SDL.h"
+#include "SDL_ttf.h"
 #include <stack>
+
+class GameScene;
+class MenuScene;
 
 /**
  * @brief The GameEngine class takes care of game scenes
@@ -53,13 +55,17 @@ public:
     /**
      * @brief logic makes actual logic ingame
      */
-    logic::Logic logic;
+    //logic::Logic logic;
 
     /**
      * @brief getLogicEventType
      * @return type of event caused by logic
      */
     Uint32 getLogicEventType() const;
+
+    bool isRunning() const;
+
+    TTF_Font *font;
 
 private:
     SDL_Window* window;
