@@ -8,7 +8,7 @@
 
 #ifndef business_logic_backend_h
 #define business_logic_backend_h
-//#include "network_backend.h"
+#include "network_backend.h"
 #include <utility>
 #include <string>
 #include <mutex>

@@ -1,4 +1,5 @@
 #include "hostscene.h"
+#include "network_backend.h"
 
 HostScene HostScene::hostScene;
 

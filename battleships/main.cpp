@@ -10,11 +10,10 @@
 #include "SDL.h"
 #include "SDL_ttf.h"
 #include "logicevent.h"
-#include <future>
 #include "gameengine.h"
 #include "menuscene.h"
 
-int main ( int argc, char *argv[] )
+int main ( )
 {
     GameEngine engine("battleships", 1024, 768);
 

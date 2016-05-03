@@ -8,7 +8,7 @@
 #include <stack>
 
 class GameScene;
-class MenuScene;
+
 
 /**
  * @brief The GameEngine class takes care of game scenes
