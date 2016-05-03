@@ -9,7 +9,7 @@
 #ifndef business_logic_backend_h
 #define business_logic_backend_h
 #include "network_backend.h"
-#include "bussiness_logic_matrix.h"
+#include "business_logic_matrix.h"
 #include <utility>
 #include <string>
 #include <mutex>
