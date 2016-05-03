@@ -6,8 +6,24 @@
 //  Copyright © 2016 Peter Bencik. All rights reserved.
 //
 
-#include <stdio.h>
+#include <iostream>
+#include "SDL.h"
+#include "SDL_ttf.h"
+#include "logicevent.h"
+#include <future>
+#include "gameengine.h"
+#include "menuscene.h"
 
-int main(){
+int main ( int argc, char *argv[] )
+{
+    GameEngine engine("battleships", 1024, 768);
 
+    engine.changeScene( MenuScene::Instance());
+
+    while ( engine.isRunning() )
+    {
+        engine.runScene();
+    }
+
+    return 0;
 }
