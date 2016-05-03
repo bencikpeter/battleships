@@ -12,18 +12,18 @@
 #include "network_backend.h"
 
 int main(){
-    network::NetworkManager manager("localhost");
+    network::NetworkManager manager("147.251.47.231");
     std::string message = "message";
     //manager.initialize();
-    manager.sender(message);
+    //manager.sender(message);
     
     //std::vector<char> recieved = manager.listener();
     //for(int i =0; i< recieved.size(); ++i) std::cout << recieved[i];
     
-    /*while (true) {
+    while (true) {
         message = manager.listener();
         std::cout << "Message: " << message << std:: endl;
-    }*/
+    }
     
     //std::cout << manager.getMyIPAddress() << std::endl;;
 }

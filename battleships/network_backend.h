@@ -57,7 +57,7 @@ namespace network {
          * bool initialize(std::string const & ip_address) must be called  with my local adress to establish connection
          * @param ip_address IP address of the other side
          */
-        NetworkManager(std::string const & ip_address): io_service(), socket(io_service,ip::udp::endpoint(ip::udp::v4(), 0)) {
+        NetworkManager(std::string const & ip_address): io_service(), socket(io_service,ip::udp::endpoint(ip::udp::v4(), 0)), rec_endpoint(ip::udp::v4(), 1337) {
             
             ip::udp::resolver resolver(io_service);
             ip::udp::resolver::query query(ip::udp::v4(), ip_address, "1337");
