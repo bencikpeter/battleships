@@ -8,11 +8,12 @@
 
 #ifndef business_logic_backend_h
 #define business_logic_backend_h
-//#include "network_backend.h"
+#include "network_backend.h"
 #include <utility>
 #include <string>
 #include <mutex>
 #include <vector>
+#include <future>
 
 namespace logic {
 
@@ -169,12 +170,12 @@ public:
         return net->initialize();
     }
 
-    bool host(){
+    bool host(std::atomic<bool> &a){
         net = new network::NetworkManager();
-        return net->waitForIinit();
+        return net->waitForIinit(a);
     }
 
-    bool isIpValid(){
+    bool isIpValid(std::string ip){
         return true;
     }
 
