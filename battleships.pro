@@ -4,7 +4,7 @@ CONFIG -= app_bundle
 CONFIG -= qt
 TARGET = battleships.out
 
-LIBS += -L/usr/local/lib -lSDL2 -lSDL2_net -pthread
+LIBS += -L/usr/local/lib -lSDL2 -lSDL2_ttf -pthread
 
 INCLUDEPATH += battleships/ \
         /usr/include/SDL2 \
