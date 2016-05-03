@@ -9,6 +9,7 @@
 #ifndef business_logic_backend_h
 #define business_logic_backend_h
 #include "network_backend.h"
+#include "bussiness_logic_matrix.h"
 #include <utility>
 #include <string>
 #include <mutex>
@@ -16,48 +17,11 @@
 #include <future>
 
 namespace logic {
-
-
-enum CellType { WATER_NOT_SHOT, WATER_SHOT, SHIP_NOT_SHOT, SHIP_SHOT };
+//enum CellType { WATER_NOT_SHOT, WATER_SHOT, SHIP_NOT_SHOT, SHIP_SHOT };
 enum GameEnd { WON, LOST, PLAY };
 /**
  * @brief The Matrix class holds ships layout and always copies it when created so GUI can work with it whithout mutex locking
  */
-class Matrix{
-    CellType** matrix;
-public:
-    Matrix() = delete;
-    Matrix(CellType** a): matrix(new CellType*[10]) {
-        for (int i = 0; i < 10; i++){
-            matrix[i] = new CellType[10];
-            for (int j = 0; j < 10; j++){
-                matrix[i][j] = a[i][j];
-            }
-        }
-    }
-    Matrix(const Matrix& o): matrix(new CellType*[10]) {
-        for (int i = 0; i < 10; i++){
-            matrix[i] = new CellType[10];
-            for (int j = 0; j < 10; j++){
-                matrix[i][j] = o.matrix[i][j];
-            }
-        }
-    }
-
-    CellType** get(){return matrix;}
-
-    const Matrix& operator= (Matrix o){
-        std::swap(o.matrix, matrix);
-        return *this;
-    }
-
-    ~Matrix(){
-        for (int i = 0; i < 10; i++){
-            delete[] matrix[i];
-        }
-        delete[] matrix;
-    }
-};
 
 
 class Logic {
