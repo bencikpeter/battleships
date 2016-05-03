@@ -66,8 +66,13 @@ private:
     int countMy;
     int countEnemy;
     network::NetworkManager* net;
-    std::mutex mutexMy;
-    std::mutex mutexEnemy;
+    std::mutex mutexMy; // myShips, countMy
+    std::mutex mutexEnemy; // enemyShips, countEnemy
+    std::mutex insert; // ship counters for insert
+    int count2;
+    int count3;
+    int count4;
+    int count6;
 
 public:
     Logic();
@@ -169,6 +174,10 @@ public:
         return net->waitForIinit();
     }
 
+    bool isIpValid(){
+        return true;
+    }
+
     GameEnd checkIfGameEnds(){
         std::lock_guard<std::mutex> guard1(mutexMy);
         std::lock_guard<std::mutex> guard2(mutexEnemy);
@@ -253,7 +262,7 @@ Logic::Logic(): myShips(new CellType*[10]), enemyShips(new CellType*[10]), count
     }
 }
 
-bool Logic::insertShip(int x, int y, bool horizontal, int length){
+bool Logic::insertShip(int x, int y, bool horizontal, int length){//doplnit pocet
     bool a = true;
     std::lock_guard<std::mutex> guard(mutexMy);
     if (horizontal){
