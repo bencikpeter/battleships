@@ -13,7 +13,6 @@ private:
     std::vector<MenuItem> menu;
     std::future<bool> host;
 
-
     void renderHostScene( GameEngine *engine, SDL_Event &event );
 
 protected:

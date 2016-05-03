@@ -1,8 +1,7 @@
 #ifndef LOGICEVENT_H
 #define LOGICEVENT_H
 
-enum MethodCode { SEND_LAYOUT, GET_LAYOUT, SHOOT, CONNECT, ENEMY_SHOT, HOST };
-
+enum MethodCode { SEND_LAYOUT, GET_LAYOUT, SHOOTSEND, CONNECT, ENEMY_SHOT, HOST };
 
 class LogicEvent
 {

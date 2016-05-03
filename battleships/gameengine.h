@@ -70,11 +70,11 @@ public:
 
     logic::Logic logic;
 
+    Uint32 logicEventType;
 private:
     SDL_Window* window;
     std::stack<GameScene*> scenes;
     bool running;
-    Uint32 logicEventType;
 };
 
 #endif // GAMEENGINE_H
