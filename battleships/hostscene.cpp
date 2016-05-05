@@ -4,7 +4,7 @@
 
 HostScene HostScene::hostScene;
 
-void HostScene::renderHostScene(GameEngine *engine, SDL_Event &event)
+void HostScene::renderHostScene(GameEngine *engine)
 {
     engine->renderer.clear();
 
@@ -74,7 +74,7 @@ void HostScene::init(GameEngine *engine)
     waiting.computeDimmensions();
     back.computeDimmensions();
 
-    renderHostScene( engine, event );
+    renderHostScene( engine );
 }
 
 void HostScene::clean()
@@ -105,7 +105,7 @@ void HostScene::runScene(GameEngine *engine)
             engine->quit();
             break;
         case SDL_MOUSEMOTION:
-            renderHostScene( engine, event );
+            renderHostScene( engine );
             break;
         case SDL_MOUSEBUTTONDOWN:
             if ( menu[1].isSelected() ) {

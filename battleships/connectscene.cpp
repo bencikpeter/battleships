@@ -3,7 +3,7 @@
 
 ConnectScene ConnectScene::connectScene;
 
-void ConnectScene::renderConnectScene(GameEngine *engine, SDL_Event &event )
+void ConnectScene::renderConnectScene(GameEngine *engine)
 {
     engine->renderer.clear();
     renderText( engine );
@@ -77,7 +77,7 @@ void ConnectScene::runScene(GameEngine *engine)
             engine->quit();
             break;
         case SDL_MOUSEMOTION:
-            renderConnectScene( engine, event );
+            renderConnectScene( engine );
             break;
         case SDL_MOUSEBUTTONDOWN:
             if ( menu[2].isSelected() ) {
@@ -87,12 +87,12 @@ void ConnectScene::runScene(GameEngine *engine)
         case SDL_KEYDOWN:
             if( event.key.keysym.sym == SDLK_BACKSPACE && inputText.length() > 0 ) {
                 inputText.pop_back();
-                renderConnectScene( engine, event );
+                renderConnectScene( engine );
             }
             break;
         case SDL_TEXTINPUT:
             inputText += event.text.text;
-            renderConnectScene( engine, event );
+            renderConnectScene( engine );
             break;
         }
     }
@@ -135,7 +135,7 @@ void ConnectScene::init(GameEngine *engine)
         SDL_FreeSurface( selected );
     }
 
-    renderConnectScene( engine, event );
+    renderConnectScene( engine );
 }
 
 void ConnectScene::clean()

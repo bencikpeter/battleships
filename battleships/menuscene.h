@@ -12,7 +12,7 @@ private:
     SDL_Event event;
     std::vector<MenuItem> menu;
 
-    void renderMenu(GameEngine *engine, SDL_Event &event );
+    void renderMenu(GameEngine *engine);
 
 friend GameEngine;
 
