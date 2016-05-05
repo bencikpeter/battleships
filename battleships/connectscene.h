@@ -13,7 +13,7 @@ private:
     SDL_Event event;
     std::vector<MenuItem> menu;
 
-    void renderConnectScene(GameEngine *engine, SDL_Event &event );
+    void renderConnectScene(GameEngine *engine);
 
     void renderText( GameEngine *engine );
 

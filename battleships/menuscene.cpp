@@ -5,7 +5,7 @@
 
 MenuScene MenuScene::menuScene;
 
-void MenuScene::renderMenu(GameEngine *engine, SDL_Event &event) {
+void MenuScene::renderMenu(GameEngine *engine) {
     engine->renderer.clear();
 
     int height;
@@ -35,7 +35,7 @@ void MenuScene::pause()
 
 void MenuScene::resume(GameEngine *engine)
 {
-    renderMenu( engine, event );
+    renderMenu( engine );
 }
 
 void MenuScene::runScene(GameEngine *engine)
@@ -46,7 +46,7 @@ void MenuScene::runScene(GameEngine *engine)
             engine->quit();
             break;
         case SDL_MOUSEMOTION:
-            renderMenu( engine, event );
+            renderMenu( engine );
             break;
         case SDL_MOUSEBUTTONDOWN:
             if ( menu[0].isSelected() ) {
@@ -57,7 +57,7 @@ void MenuScene::runScene(GameEngine *engine)
             }
             break;
         case SDL_WINDOWEVENT:
-            renderMenu( engine, event );
+            renderMenu( engine );
             break;
         default:
             break;
@@ -84,7 +84,7 @@ void MenuScene::init(GameEngine *engine)
         SDL_FreeSurface( selected );
         item.computeDimmensions();
     }
-    renderMenu( engine, event );
+    renderMenu( engine );
 }
 
 void MenuScene::clean()
