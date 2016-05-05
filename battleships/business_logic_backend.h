@@ -15,9 +15,10 @@
 #include <mutex>
 #include <vector>
 #include <future>
+#include "logicevent.h"
 
 namespace logic {
-//enum CellType { WATER_NOT_SHOT, WATER_SHOT, SHIP_NOT_SHOT, SHIP_SHOT };
+//enum CellType { SHIP_NOT_SHOT, SHIP_SHOT, WATER_NOT_SHOT, WATER_SHOT, CLICKABLE, NOT_CLICKABLE };
 enum GameEnd { WON, LOST, PLAY };
 /**
  * @brief The Matrix class holds ships layout and always copies it when created so GUI can work with it whithout mutex locking
@@ -33,7 +34,7 @@ private:
     network::NetworkManager* net;
     std::mutex mutexMy; // myShips, countMy
     std::mutex mutexEnemy; // enemyShips, countEnemy
-    std::mutex insert; // ship counters for insert
+    std::mutex mutexInsert; // ship counters for insert
     int count2;
     int count3;
     int count4;
@@ -64,7 +65,9 @@ public:
      * @param y index from top (0) to bottom (9)
      * @return true if it was a hit false if you shot water
      */
-    bool shoot(int x, int y);
+    void shootSend(int x, int y);
+
+    bool shootCheck(int x, int y);
 
     /**
      * @brief getEnemyShot called with std::async
@@ -102,6 +105,15 @@ public:
     bool isIpValid(std::string ip);
 
     GameEnd checkIfGameEnds();
+
+    /**
+     * @brief getClickableMatrix when user clicks on water creates array (does not modify myShips) where he can click next (other end of ship)
+     * @return logic::Matrix copy
+     */
+    Matrix getClickableMatrix(int x, int y);
+
+    bool checkIfAllShipsPlaced();
+
 
 
 private:

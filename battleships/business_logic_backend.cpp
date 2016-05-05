@@ -13,7 +13,8 @@ logic::Logic::~Logic(){
     delete net;
 }
 
-logic::Logic::Logic(): myShips(new CellType*[10]), enemyShips(new CellType*[10]), countMy(31), countEnemy(31), net(nullptr){
+logic::Logic::Logic(): myShips(new CellType*[10]), enemyShips(new CellType*[10]), countMy(31), countEnemy(31), net(nullptr),
+                       count2(4), count3(3), count4(2), count6(1){
     std::lock_guard<std::mutex> guard1(mutexMy);
     std::lock_guard<std::mutex> guard2(mutexEnemy);
     for (int i = 0; i < 10; i++){
@@ -26,47 +27,103 @@ logic::Logic::Logic(): myShips(new CellType*[10]), enemyShips(new CellType*[10])
     }
 }
 
-bool logic::Logic::insertShip(int x, int y, bool horizontal, int length){//doplnit pocet
+bool logic::Logic::insertShip(int x, int y, bool horizontal, int length){
     bool a = true;
-    std::lock_guard<std::mutex> guard(mutexMy);
+    std::lock_guard<std::mutex> guard1(mutexMy);
     if (horizontal){
-        if (x + length < 10){
-            for (int i = x; i < x+length; i++)
-                a = a && checkWaterAroundCell(i,y);
-        }
-        else a = false;
-        if (a)
-            for (int i = x; i < x+length; i++)
-                myShips[i][y] = SHIP_NOT_SHOT;
-
-    }
-    else{
-        if (y + length < 10){
+        if (y + length-1 < 10){
             for (int i = y; i < y+length; i++)
                 a = a && checkWaterAroundCell(x,i);
         }
         else a = false;
-        if (a)
+        if (a){
             for (int i = y; i < y+length; i++)
                 myShips[x][i] = SHIP_NOT_SHOT;
+
+            if (x-1 >= 0)
+                for (int i = y; i < y+length; i++ )
+                    myShips[x-1][i] = NOT_CLICKABLE;
+            if (x+1 < 10)
+                for (int i = y; i < y+length; i++ )
+                    myShips[x+1][i] = NOT_CLICKABLE;
+            if (y-1 >= 0){
+                if (x-1 >= 0) myShips[x-1][y-1] = NOT_CLICKABLE;
+                if (x+1 < 10) myShips[x+1][y-1] = NOT_CLICKABLE;
+                myShips[x][y-1] = NOT_CLICKABLE;
+            }
+            if (y+length < 10){
+                if (x-1 >= 0) myShips[x-1][y+length] = NOT_CLICKABLE;
+                if (x+1 < 10) myShips[x+1][y+length] = NOT_CLICKABLE;
+                myShips[x][y+length] = NOT_CLICKABLE;
+            }
+        }
+    }
+    else{
+        if (x + length-1 < 10){
+            for (int i = x; i < x+length; i++)
+                a = a && checkWaterAroundCell(i,y);
+        }
+        else a = false;
+        if (a){
+            for (int i = x; i < x+length; i++)
+                myShips[i][y] = SHIP_NOT_SHOT;
+
+            if (y-1 >= 0)
+                for (int i = x; i < x+length; i++ )
+                    myShips[i][y-1] = NOT_CLICKABLE;
+            if (y+1 < 10)
+                for (int i = x; i < x+length; i++ )
+                    myShips[i][y+1] = NOT_CLICKABLE;
+            if (x-1 >= 0){
+                if (y-1 >= 0) myShips[x-1][y-1] = NOT_CLICKABLE;
+                if (y+1 < 10) myShips[x-1][y+1] = NOT_CLICKABLE;
+                myShips[x-1][y] = NOT_CLICKABLE;
+            }
+            if (x+length < 10){
+                if (y-1 >= 0) myShips[x+length][y-1] = NOT_CLICKABLE;
+                if (y+1 < 10) myShips[x+length][y+1] = NOT_CLICKABLE;
+                myShips[x+length][y] = NOT_CLICKABLE;
+            }
+        }
+    }
+    if (a) {
+        std::lock_guard<std::mutex> guard2(mutexInsert);
+        switch(length){
+        case 6: count6--; break;
+        case 4: count4--; break;
+        case 3: count3--; break;
+        case 2: count2--; break;
+        }
     }
     return a;
 }
-
 /*
 void logic::Logic::sendMyLayout(){
+    std::lock_guard<std::mutex> guard(mutexMy);
+    for (int i = 0; i < 10; i++){
+        for (int j = 0; j < 10; j++){
+            if (myShips[i][j] == CLICKABLE || myShips[i][j] == NOT_CLICKABLE) myShips[i][j] = WATER_NOT_SHOT;
+        }
+    }
     net->sender(encodeMyLayout());
 }
 
-bool logic::Logic::shoot(int x, int y){
+void logic::Logic::shootSend(int x, int y){
     net->sender(encodeCoords(x,y));
     std::lock_guard<std::mutex> guard(mutexEnemy);
-    if (enemyShips[x][y] >= SHIP_NOT_SHOT) {
+    if (enemyShips[x][y] == SHIP_NOT_SHOT) {
         enemyShips[x][y] = SHIP_SHOT;
         countEnemy--;
+    }
+    else
+        enemyShips[x][y] = WATER_SHOT;
+}
+
+bool logic::Logic::shootCheck(int x, int y){
+    std::lock_guard<std::mutex> guard(mutexEnemy);
+    if (enemyShips[x][y] == SHIP_NOT_SHOT) {
         return true;
     }
-    enemyShips[x][y] = WATER_SHOT;
     return false;
 }
 
@@ -75,18 +132,20 @@ std::pair<int, int> logic::Logic::getEnemyShot(){
     int x = a.first;
     int y = a.second;
     std::lock_guard<std::mutex> guard(mutexMy);
-    if (myShips[x][y] >= SHIP_NOT_SHOT) {
+    if (myShips[x][y] == SHIP_NOT_SHOT) {
         myShips[x][y] = SHIP_SHOT;
         countMy--;
     }
     else
         myShips[x][y] = WATER_SHOT;
+    auto e = LogicEvent(ENEMY_SHOT);
     return a;
 }
 
 logic::Matrix logic::Logic::getEnemyShipLayout(){
     decodeEnemyLayout(net->listener());
     std::lock_guard<std::mutex> guard(mutexEnemy);
+    auto e = LogicEvent(GET_LAYOUT);
     return Matrix(enemyShips);
 }
 
@@ -100,13 +159,15 @@ logic::Matrix logic::Logic::getMyShips(){
     return Matrix(myShips);
 }
 
-bool logic::Logic::connect(std::__cxx11::string ip){
+bool logic::Logic::connect(std::string ip){
     net = new network::NetworkManager(ip);
+    auto e = LogicEvent(CONNECT);
     return net->initialize();
 }
 
 bool logic::Logic::host(std::atomic<bool> &a){
     net = new network::NetworkManager();
+    auto e = LogicEvent(HOST);
     return net->waitForIinit(a);
 }
 
@@ -120,6 +181,51 @@ logic::GameEnd logic::Logic::checkIfGameEnds(){
     if (countMy == 0) return LOST;
     if (countEnemy == 0) return WON;
     return PLAY;
+}
+
+logic::Matrix logic::Logic::getClickableMatrix(int x, int y){
+    std::lock_guard<std::mutex> guard(mutexMy);
+    auto m = Matrix(myShips);
+    guard.~lock_guard();
+    auto ships = m.get();
+    bool a[4];
+    for (int i = 0; i < 4; i++)
+        a[i] = true;
+    int* pointer;
+    std::lock_guard<std::mutex> guard2(mutexInsert);
+    for (int i = 1; i < 6; i++){
+        switch(i){
+                case 5: pointer = &count6; break;
+                case 3: pointer = &count4; break;
+                case 2: pointer = &count3; break;
+                case 1: pointer = &count2; break;
+                }
+        //right
+        if (ships[x+i][y] != WATER_NOT_SHOT)
+            a[0] = false;
+        //left
+        if (ships[x-i][y] != WATER_NOT_SHOT)
+            a[1] = false;
+        //down
+        if (ships[x][y+i] != WATER_NOT_SHOT)
+            a[2] = false;
+        //up
+        if (ships[x][y-i] != WATER_NOT_SHOT)
+            a[3] = false;
+        if ((i != 4) && (*pointer != 0)){
+            if (a[0]) ships[x+i][y] = CLICKABLE;
+            if (a[1]) ships[x-i][y] = CLICKABLE;
+            if (a[2]) ships[x][y+i] = CLICKABLE;
+            if (a[3]) ships[x][y-i] = CLICKABLE;
+        }
+    }
+    return m;
+
+}
+
+bool logic::Logic::checkIfAllShipsPlaced()
+{
+    return (count2 == 0) && (count3 == 0) && (count4 == 0) && (count6 == 0);
 }
 
 std::vector<char> logic::Logic::encodeCoords(int x, int y){
@@ -158,14 +264,14 @@ void logic::Logic::decodeEnemyLayout(const std::vector<char> &vec){
 }
 
 bool logic::Logic::checkWaterAroundCell(int x, int y){
-    bool a = myShips[x][y] == WATER_NOT_SHOT;
-    if (x + 1 < 10) a = a && myShips[x+1][y] == WATER_NOT_SHOT;
-    if (x - 1 >= 0) a = a && myShips[x-1][y] == WATER_NOT_SHOT;
-    if (y + 1 < 10) a = a && myShips[x][y+1] == WATER_NOT_SHOT;
-    if (y - 1 >= 0) a = a && myShips[x][y-1] == WATER_NOT_SHOT;
-    if (x + 1 < 10 && y + 1 < 10) a = a && myShips[x+1][y+1] == WATER_NOT_SHOT;
-    if (x + 1 < 10 && y - 1 >= 0) a = a && myShips[x+1][y-1] == WATER_NOT_SHOT;
-    if (x - 1 >= 0 && y + 1 < 10) a = a && myShips[x-1][y+1] == WATER_NOT_SHOT;
-    if (x - 1 >= 0 && y - 1 >= 0) a = a && myShips[x-1][y-1] == WATER_NOT_SHOT;
+    bool a = myShips[x][y] >= WATER_NOT_SHOT;
+    if (x + 1 < 10) a = a && myShips[x+1][y] >= WATER_NOT_SHOT;
+    if (x - 1 >= 0) a = a && myShips[x-1][y] >= WATER_NOT_SHOT;
+    if (y + 1 < 10) a = a && myShips[x][y+1] >= WATER_NOT_SHOT;
+    if (y - 1 >= 0) a = a && myShips[x][y-1] >= WATER_NOT_SHOT;
+    if (x + 1 < 10 && y + 1 < 10) a = a && myShips[x+1][y+1] >= WATER_NOT_SHOT;
+    if (x + 1 < 10 && y - 1 >= 0) a = a && myShips[x+1][y-1] >= WATER_NOT_SHOT;
+    if (x - 1 >= 0 && y + 1 < 10) a = a && myShips[x-1][y+1] >= WATER_NOT_SHOT;
+    if (x - 1 >= 0 && y - 1 >= 0) a = a && myShips[x-1][y-1] >= WATER_NOT_SHOT;
     return a;
 }
