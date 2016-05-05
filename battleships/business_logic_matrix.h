@@ -1,7 +1,7 @@
 #ifndef BUSSINESS_LOGIC_MATRIX
 #define BUSSINESS_LOGIC_MATRIX
 namespace logic{
-enum CellType { WATER_NOT_SHOT, WATER_SHOT, SHIP_NOT_SHOT, SHIP_SHOT };
+enum CellType { SHIP_NOT_SHOT, SHIP_SHOT, WATER_NOT_SHOT, WATER_SHOT, CLICKABLE, NOT_CLICKABLE };
 class Matrix{
     CellType** matrix;
 public:
