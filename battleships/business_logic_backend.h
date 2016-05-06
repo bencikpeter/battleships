@@ -52,7 +52,7 @@ public:
      * @param length length of ship
      * @return true if ship was legaly placed
      */
-    bool insertShip(int x, int y, bool horizontal, int length);
+    bool insertShip(int x1, int y1, int x2, int y2);
 
     /**
      * @brief sendMyLayout when finished layout this function is called with std::async and before that getEnemyShipLayout() is also called to get enemy layout
@@ -100,7 +100,9 @@ public:
      */
     bool connect(std::string ip);
 
-    bool host(std::atomic<bool> &a);
+    bool host();
+
+    void resetSocket();
 
     bool isIpValid(std::string ip);
 
