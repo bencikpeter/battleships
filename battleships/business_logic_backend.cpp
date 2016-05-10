@@ -124,12 +124,12 @@ void logic::Logic::sendMyLayout(){
             if (myShips[i][j] == CLICKABLE || myShips[i][j] == NOT_CLICKABLE) myShips[i][j] = WATER_NOT_SHOT;
         }
     }
-//    net->sender(encodeMyLayout());
+    net->sender(encodeMyLayout());
     auto e = LogicEvent(SEND_LAYOUT);
 }
 
 void logic::Logic::shootSend(int x, int y){
-//    net->sender(encodeCoords(x,y));
+    net->sender(encodeCoords(x,y));
     std::lock_guard<std::mutex> guard(mutexEnemy);
     if (enemyShips[x][y] == SHIP_NOT_SHOT) {
         enemyShips[x][y] = SHIP_SHOT;
@@ -147,7 +147,7 @@ bool logic::Logic::shootCheck(int x, int y){
     }
     return false;
 }
-/*
+
 std::pair<int, int> logic::Logic::getEnemyShot(){
     auto a = decodePair(net->listener());
     int x = a.first;
@@ -162,9 +162,9 @@ std::pair<int, int> logic::Logic::getEnemyShot(){
     auto e = LogicEvent(ENEMY_SHOT);
     return a;
 }
-*/
+
 logic::Matrix logic::Logic::getEnemyShipLayout(){
-//    decodeEnemyLayout(net->listener());
+    decodeEnemyLayout(net->listener());
     std::lock_guard<std::mutex> guard(mutexEnemy);
     auto e = LogicEvent(GET_LAYOUT);
     return Matrix(enemyShips);
