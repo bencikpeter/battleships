@@ -12,8 +12,8 @@
 #include "network_backend.h"
 
 int main(){
-    network::NetworkManager manager("147.251.47.231");
-    std::string message = "message";
+    network::NetworkManager manager("localhost");
+    std::vector<char> message = {'m','e','s','s','a','g','e'};
     //manager.initialize();
     //manager.sender(message);
     
@@ -22,7 +22,7 @@ int main(){
     
     while (true) {
         message = manager.listener();
-        std::cout << "Message: " << message << std:: endl;
+        //std::cout << "Message: " << message << std:: endl;
     }
     
     //std::cout << manager.getMyIPAddress() << std::endl;;
