@@ -130,7 +130,7 @@ namespace network {
         bool isInitMessage(std::vector<char> message){
             std::string toBeTested = toString(message);
             //std::regex reg ("^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$");
-            std::regex reg("^(\d+)\.(\d+)\.(\d+)\.(\d+)$"); //wont be sending numerical stuff, so this is sufficient
+            std::regex reg("^(\\d+)\\.(\\d+)\\.(\\d+)\\.(\\d+)$"); //wont be sending numerical stuff, so this is sufficient
             return std::regex_match(toBeTested,reg);
         }
         
@@ -183,7 +183,7 @@ namespace network {
         
         bool isLocalAddress(std::string const& address){
             //std::regex reg("(^127\..*)|(^10\..*)|(^172\.1[6-9]\..*)|(^172\.2[0-9]\..*)|(^172\.3[0-1]\..*)|(^192\.168\..*)");
-            std::regex reg("^192\.168\..*");
+            std::regex reg("^192\\.168\\..*");
             return std::regex_match(address, reg);
         }
         
