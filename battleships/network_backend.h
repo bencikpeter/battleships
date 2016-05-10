@@ -58,7 +58,7 @@ namespace network {
          * bool initialize(std::string const & ip_address) must be called  with my local adress to establish connection
          * @param ip_address IP address of the other side
          */
-        NetworkManager(std::string const & ip_address): io_service(), socket(io_service,ip::udp::endpoint(ip::udp::v4(), 0)) {
+        NetworkManager(std::string const & ip_address): io_service(), socket(io_service,ip::udp::endpoint(ip::udp::v4(), 1337)), send_endpoint(ip::udp::v4(), 1337) {
             
             ip::udp::resolver resolver(io_service);
             ip::udp::resolver::query query(ip::udp::v4(), ip_address, "1337");
@@ -69,7 +69,7 @@ namespace network {
          * inits the necessary network properties
          * bool waitForIinit() must be called to establish conection
          */
-        NetworkManager(): io_service(), socket(io_service,ip::udp::endpoint(ip::udp::v4(), 0)) { }
+        NetworkManager(): io_service(), socket(io_service,ip::udp::endpoint(ip::udp::v4(), 1337)) { }
         
         ~NetworkManager(){
             socket.close();
@@ -110,9 +110,9 @@ namespace network {
          * @param messasge
          * @returns true if sended succesfully
          */
-        bool sender(std::string message){
+        bool sender(std::vector<char> message){
             try {
-                send_buf = toCharVector(message);
+                send_buf = message;
                 socket.send_to(asio::buffer(send_buf), rec_endpoint);
                 return true;
             } catch (std::exception& ex ) {
@@ -123,9 +123,9 @@ namespace network {
          * waits for a message from the other party
          * @returns message recieved message
          */
-        std::string listener(){
+        std::vector<char> listener(){
             size_t len = socket.receive_from(asio::buffer(rec_buf), send_endpoint);
-            return toString(rec_buf);
+            return rec_buf;
         }
     //private: /*FOR TESTING PURPOSES*/
         bool isInitMessage(std::vector<char> message){
