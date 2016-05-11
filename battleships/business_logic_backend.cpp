@@ -253,6 +253,18 @@ logic::Matrix logic::Logic::getClickableMatrix(int x, int y){
     return m;
 }
 
+logic::Matrix logic::Logic::getClickableMatrix()
+{
+    auto m = Matrix(myShips);
+    for (int i = 0; i < 10; i++){
+        for (int j = 0; j < 10; j++){
+            if (m.get()[i][j] == WATER_NOT_SHOT)
+            m.get()[i][j] = CLICKABLE;
+        }
+    }
+    return m;
+}
+
 bool logic::Logic::checkIfAllShipsPlaced()
 {
     return (count2 == 0) && (count3 == 0) && (count4 == 0) && (count6 == 0);
