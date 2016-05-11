@@ -27,18 +27,6 @@ namespace network {
     
     namespace ip = asio::ip;
     
-    /*class NetworkException: public std::exception {
-        
-        const char* message;
-        
-        NetworkException(const std::exception& other): message(other.what()) {}
-        
-        virtual const char* what() const override {
-            return message;
-        }
-    };*/
-    
-    
     class NetworkManager {
         
         asio::io_service io_service;
@@ -58,7 +46,7 @@ namespace network {
          * bool initialize(std::string const & ip_address) must be called  with my local adress to establish connection
          * @param ip_address IP address of the other side
          */
-        NetworkManager(std::string const & ip_address): io_service(), socket(io_service,ip::udp::endpoint(ip::udp::v4(), 1337)), send_endpoint(ip::udp::v4(), 1337) {
+        NetworkManager(std::string const & ip_address): io_service(), socket(io_service,ip::udp::endpoint(ip::udp::v4(), 1337)),send_endpoint(ip::udp::v4(), 1337) {
             
             ip::udp::resolver resolver(io_service);
             ip::udp::resolver::query query(ip::udp::v4(), ip_address, "1337");
@@ -69,7 +57,7 @@ namespace network {
          * inits the necessary network properties
          * bool waitForIinit() must be called to establish conection
          */
-        NetworkManager(): io_service(), socket(io_service,ip::udp::endpoint(ip::udp::v4(), 1337)) { }
+        NetworkManager(): io_service(), socket(io_service,ip::udp::endpoint(ip::udp::v4(), 1337)), send_endpoint(ip::udp::v4(), 1337) { }
         
         ~NetworkManager(){
             socket.close();
@@ -124,6 +112,7 @@ namespace network {
          * @returns message recieved message
          */
         std::vector<char> listener(){
+            rec_buf.resize(1024);
             size_t len = socket.receive_from(asio::buffer(rec_buf), send_endpoint);
             return rec_buf;
         }
