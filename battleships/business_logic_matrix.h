@@ -46,8 +46,9 @@ public:
             }
         }
     }
-    Matrix(const Matrix& o) {
+    Matrix(const Matrix& o): matrix(new CellType*[10]) {
         for (int i = 0; i < 10; i++){
+            matrix[i] = new CellType[10];
             for (int j = 0; j < 10; j++){
                 matrix[i][j] = o.matrix[i][j];
             }
