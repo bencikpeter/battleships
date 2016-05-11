@@ -18,6 +18,7 @@
 //#include <sys/types.h>
 #include <ifaddrs.h>
 #include <memory>
+#include <mutex>
 //#include <netinet/in.h>
 //#include <arpa/inet.h>
 

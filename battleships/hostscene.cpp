@@ -112,6 +112,7 @@ void HostScene::runScene(GameEngine *engine)
             if ( menu[1].isSelected() ) {
                 engine->logic.resetSocket();
                 engine->popScene();
+
             }
             break;
         }
