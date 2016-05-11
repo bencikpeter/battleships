@@ -251,6 +251,12 @@ logic::Matrix logic::Logic::getClickableMatrix(int x, int y){
             if (a[3] && y-i >= 0) ships[x][y-i] = CLICKABLE;
         }
     }
+    for (int i = 0; i < 10; i++){
+        for (int j = 0; j < 10; j++){
+            if (ships[i][j] == WATER_NOT_SHOT)
+            ships[i][j] = NOT_CLICKABLE;
+        }
+    }
     return m;
 }
 
