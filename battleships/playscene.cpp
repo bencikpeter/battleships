@@ -42,7 +42,15 @@ PlayScene::PlayScene()
 
 void PlayScene::init(GameEngine *engine)
 {
-
+    for ( int i = 0; i < 10; ++i ) {
+        for ( int j = 0; j < 10; ++j ) {
+            if ( j & 1 == 1 && i & 1 == 0) {
+                myGrid.get()[ i ][ j ] = logic::WATER_NOT_SHOT;
+            } else {
+                myGrid.get()[ i ][ j ] = logic::SHIP_NOT_SHOT;
+            }
+        }
+    }
 }
 
 void PlayScene::clean()
@@ -57,7 +65,13 @@ void PlayScene::pause()
 
 void PlayScene::resume(GameEngine *engine)
 {
-
+    if ( SDL_WaitEvent( &event ) ) {
+        switch ( event.type ) {
+        case SDL_QUIT:
+            engine->quit();
+            break;
+        }
+    }
 }
 
 void PlayScene::runScene(GameEngine *engine)
