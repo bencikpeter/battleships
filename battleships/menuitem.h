@@ -1,9 +1,9 @@
 #ifndef MENUITEM_H
 #define MENUITEM_H
 
-#include <SDL.h>
+#include "SDL.h"
 #include <string>
-#include <SDL_ttf.h>
+#include "SDL_ttf.h"
 #include "gameengine.h"
 
 class MenuItem
