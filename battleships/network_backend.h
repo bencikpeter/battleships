@@ -124,7 +124,7 @@ namespace network {
             std::string toBeTested = toString(message);
             //std::regex reg ("^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$");
             std::regex reg("^(\\d+)\\.(\\d+)\\.(\\d+)\\.(\\d+)$"); //wont be sending numerical stuff, so this is sufficient
-            return std::regex_match(toBeTested,reg);
+            return true; //std::regex_match(toBeTested,reg);
         }
         
         std::vector<char> toCharVector(std::string const &_string){
