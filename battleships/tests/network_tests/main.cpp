@@ -45,7 +45,7 @@ void host(){
 }
 
 void connect(){
-    network::NetworkManager manager("");
+    network::NetworkManager manager("147.251.46.241");
     std::cout << "Initializing" << std::endl;
     manager.initialize();
     std::cout << "Initializing complete" << std::endl;
@@ -72,9 +72,17 @@ int main(int argc, char* argv[]){
         return 1;
     }
     
-    if (!strcmp(argv[1], "h")) {
+    network::NetworkManager manager("localhost");
+    
+    while (true) {
+        printMessage(manager.listener());
+        std::cout << std::endl;
+        manager.socketReset();
+    }
+    
+    /*if (!strcmp(argv[1], "h")) {
         host();
     } else {
         connect();
-    }
+    }*/
 }
