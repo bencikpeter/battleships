@@ -32,7 +32,12 @@ inline std::ostream& operator<<(std::ostream & os, CellType & t)
 class Matrix{
     CellType** matrix;
 public:
-    Matrix() = delete;
+    Matrix(): matrix(new CellType*[10]) {
+        for (int i = 0; i < 10; i++){
+            matrix[i] = new CellType[10];
+        }
+    }
+
     Matrix(CellType** a): matrix(new CellType*[10]) {
         for (int i = 0; i < 10; i++){
             matrix[i] = new CellType[10];
@@ -41,9 +46,8 @@ public:
             }
         }
     }
-    Matrix(const Matrix& o): matrix(new CellType*[10]) {
+    Matrix(const Matrix& o) {
         for (int i = 0; i < 10; i++){
-            matrix[i] = new CellType[10];
             for (int j = 0; j < 10; j++){
                 matrix[i][j] = o.matrix[i][j];
             }
