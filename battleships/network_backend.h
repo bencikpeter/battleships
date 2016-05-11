@@ -22,6 +22,7 @@
 
 #include "../asio-1.10.6/include/asio.hpp"
 
+
 namespace network {
     
     namespace ip = asio::ip;
@@ -174,8 +175,14 @@ namespace network {
         }
         
         bool isLocalAddress(std::string const& address){
+<<<<<<< HEAD
             //std::regex reg("(^127\..*)|(^10\..*)|(^172\.1[6-9]\..*)|(^172\.2[0-9]\..*)|(^172\.3[0-1]\..*)|(^192\.168\..*)");
             std::regex reg("^147\\.251\\..*");
+=======
+            std::regex reg("^25\\.43\\..*");
+          //  std::regex reg("^192\\.168\\..*");
+         //   return true; std::regex_match(address, reg);
+>>>>>>> master
             return std::regex_match(address, reg);
         }
         
