@@ -124,6 +124,7 @@ void logic::Logic::sendMyLayout(){
             if (myShips[i][j] == CLICKABLE || myShips[i][j] == NOT_CLICKABLE) myShips[i][j] = WATER_NOT_SHOT;
         }
     }
+    guard.~lock_guard();
     net->sender(encodeMyLayout());
     auto e = LogicEvent(SEND_LAYOUT);
 }
@@ -250,12 +251,20 @@ logic::Matrix logic::Logic::getClickableMatrix(int x, int y){
             if (a[3] && y-i >= 0) ships[x][y-i] = CLICKABLE;
         }
     }
+    for (int i = 0; i < 10; i++){
+        for (int j = 0; j < 10; j++){
+            if (ships[i][j] == WATER_NOT_SHOT)
+            ships[i][j] = NOT_CLICKABLE;
+        }
+    }
     return m;
 }
 
 logic::Matrix logic::Logic::getClickableMatrix()
 {
+    std::lock_guard<std::mutex> guard(mutexMy);
     auto m = Matrix(myShips);
+    guard.~lock_guard();
     for (int i = 0; i < 10; i++){
         for (int j = 0; j < 10; j++){
             if (m.get()[i][j] == WATER_NOT_SHOT)
