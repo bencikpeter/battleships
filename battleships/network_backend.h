@@ -173,7 +173,7 @@ namespace network {
         bool isLocalAddress(std::string const& address){
             //std::regex reg("(^127\..*)|(^10\..*)|(^172\.1[6-9]\..*)|(^172\.2[0-9]\..*)|(^172\.3[0-1]\..*)|(^192\.168\..*)");
             std::regex reg("^192\\.168\\..*");
-            return std::regex_match(address, reg);
+            return true; //std::regex_match(address, reg);
         }
         
     };
