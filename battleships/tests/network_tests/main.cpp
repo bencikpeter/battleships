@@ -72,17 +72,16 @@ int main(int argc, char* argv[]){
         return 1;
     }
     
-    network::NetworkManager manager("localhost");
-    
+    /*network::NetworkManager manager("localhost");
     while (true) {
         printMessage(manager.listener());
         std::cout << std::endl;
         manager.socketReset();
-    }
+    }*/
     
-    /*if (!strcmp(argv[1], "h")) {
+    if (!strcmp(argv[1], "h")) {
         host();
     } else {
         connect();
-    }*/
+    }
 }
