@@ -49,6 +49,7 @@ PlayScene::PlayScene()
 void PlayScene::init(GameEngine *engine)
 {
     phase = 0;
+    clicked = false;
     int width;
     int height;
     SDL_GetRendererOutputSize( engine->renderer.renderer, &width, &height );
@@ -76,20 +77,36 @@ void PlayScene::resume(GameEngine *engine)
 
 void PlayScene::runScene(GameEngine *engine)
 {
-    logic::CellType** pt = myGrid.get();
     if ( phase == 0 ) {
         if ( SDL_WaitEvent( &event ) ) {
             switch ( event.type ) {
             case SDL_QUIT:
                 engine->quit();
                 break;
-            case SDL_MOUSEMOTION:
-                renderMyGrid( engine );
-                break;
             case SDL_MOUSEBUTTONDOWN:
-                auto coord = getMousePos();
-                myGrid = engine->logic.getClickableMatrix( coord.first, coord.second );
-                pt = myGrid.get();
+                if ( !clicked ) {
+                    shipBegin = getMousePos();
+                    if ( myGrid.get()[ shipBegin.first ][ shipBegin.second ] == logic::CLICKABLE ) {
+                        myGrid = engine->logic.getClickableMatrix( shipBegin.first, shipBegin.second );
+                        renderMyGrid( engine );
+                        clicked = true;
+                    }
+                } else if ( clicked ) {
+                    shipEnd = getMousePos();
+                    if ( myGrid.get()[ shipEnd.first ][ shipEnd.second ] == logic::CLICKABLE ) {
+                        bool correct = engine->logic.insertShip( shipBegin.first,
+                                                                 shipBegin.second,
+                                                                 shipEnd.first,
+                                                                 shipEnd.second );
+                        clicked = false;
+                        myGrid = engine->logic.getClickableMatrix();
+                        renderMyGrid( engine );
+                    } else if ( myGrid.get()[ shipEnd.first ][ shipEnd.second ] == logic::NOT_CLICKABLE ) {
+                        clicked = false;
+                        myGrid = engine->logic.getClickableMatrix();
+                        renderMyGrid( engine );
+                    }
+                }
                 break;
             }
         }

@@ -15,6 +15,9 @@ private:
     int phase;
     int cellWidth;
     int cellHeight;
+    bool clicked;
+    std::pair< int, int > shipBegin;
+    std::pair< int, int > shipEnd;
 
     void renderMyGrid(GameEngine *engine);
     std::pair< int, int > getMousePos();
