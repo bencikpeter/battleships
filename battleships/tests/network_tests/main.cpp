@@ -45,7 +45,7 @@ void host(){
 }
 
 void connect(){
-    network::NetworkManager manager("192.168.0.10");
+    network::NetworkManager manager("25.43.227.247");
     std::cout << "Initializing" << std::endl;
     manager.initialize();
     std::cout << "Initializing complete" << std::endl;
