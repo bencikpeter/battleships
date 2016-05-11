@@ -1,5 +1,6 @@
 #include "connectscene.h"
 #include <iostream>
+#include <playscene.h>
 
 ConnectScene ConnectScene::connectScene;
 
@@ -83,6 +84,9 @@ void ConnectScene::runScene(GameEngine *engine)
             if ( menu[2].isSelected() ) {
                 engine->popScene();
             }
+            if ( menu[3].isSelected() ) {
+                engine->pushScene( PlayScene::Instance() );
+            }
             break;
         case SDL_KEYDOWN:
             if( event.key.keysym.sym == SDLK_BACKSPACE && inputText.length() > 0 ) {
@@ -96,7 +100,6 @@ void ConnectScene::runScene(GameEngine *engine)
             break;
         }
     }
-    //SDL_StopTextInput();
 }
 
 ConnectScene *ConnectScene::Instance()

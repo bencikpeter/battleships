@@ -15,7 +15,7 @@
 
 int main ( )
 {
-    GameEngine engine("battleships", 1024, 768);
+    GameEngine engine("battleships", 1020, 760);
 
     engine.changeScene( MenuScene::Instance());
 

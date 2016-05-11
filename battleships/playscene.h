@@ -12,8 +12,12 @@ private:
     std::future<logic::Matrix> enemyLayout;
     logic::Matrix myGrid;
     logic::Matrix enemyGrid;
+    int phase;
+    int cellWidth;
+    int cellHeight;
 
     void renderMyGrid(GameEngine *engine);
+    std::pair< int, int > getMousePos();
 
 protected:
     PlayScene();

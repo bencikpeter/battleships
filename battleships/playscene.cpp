@@ -4,18 +4,13 @@ PlayScene PlayScene::playScene;
 
 void PlayScene::renderMyGrid(GameEngine *engine)
 {
-    int width;
-    int height;
-    SDL_GetRendererOutputSize( engine->renderer.renderer, &width, &height );
-    int cellWidth = width / 10;
-    int cellHeight = height / 10;
     for (int i = 0; i < 10; ++i ){
         for ( int j = 0; j < 10; ++j ) {
             SDL_Rect rect;
             rect.w = cellWidth;
             rect.h = cellHeight;
             rect.x = i * cellWidth;
-            rect.h = j * cellHeight;
+            rect.y = j * cellHeight;
             if ( myGrid.get()[ i ][ j ] == logic::WATER_NOT_SHOT ) {
                 engine->renderer.setRenderColor( 64, 164, 223, 255 );
             } else if ( myGrid.get()[ i ][ j ] == logic::WATER_SHOT ) {
@@ -35,6 +30,17 @@ void PlayScene::renderMyGrid(GameEngine *engine)
     engine->renderer.render();
 }
 
+std::pair<int, int> PlayScene::getMousePos()
+{
+    int x;
+    int y;
+    std::pair< int, int > coordinates;
+    SDL_GetMouseState( &x, &y );
+    coordinates.first = x / cellWidth;
+    coordinates.second = y / cellHeight;
+    return coordinates;
+}
+
 PlayScene::PlayScene()
 {
 
@@ -42,15 +48,15 @@ PlayScene::PlayScene()
 
 void PlayScene::init(GameEngine *engine)
 {
-    for ( int i = 0; i < 10; ++i ) {
-        for ( int j = 0; j < 10; ++j ) {
-            if ( j & 1 == 1 && i & 1 == 0) {
-                myGrid.get()[ i ][ j ] = logic::WATER_NOT_SHOT;
-            } else {
-                myGrid.get()[ i ][ j ] = logic::SHIP_NOT_SHOT;
-            }
-        }
-    }
+    phase = 0;
+    int width;
+    int height;
+    SDL_GetRendererOutputSize( engine->renderer.renderer, &width, &height );
+    cellWidth = width / 10;
+    cellHeight = height / 10;
+    myGrid = engine->logic.getClickableMatrix();
+
+    renderMyGrid( engine );
 }
 
 void PlayScene::clean()
@@ -65,18 +71,29 @@ void PlayScene::pause()
 
 void PlayScene::resume(GameEngine *engine)
 {
-    if ( SDL_WaitEvent( &event ) ) {
-        switch ( event.type ) {
-        case SDL_QUIT:
-            engine->quit();
-            break;
-        }
-    }
+
 }
 
 void PlayScene::runScene(GameEngine *engine)
 {
-
+    logic::CellType** pt = myGrid.get();
+    if ( phase == 0 ) {
+        if ( SDL_WaitEvent( &event ) ) {
+            switch ( event.type ) {
+            case SDL_QUIT:
+                engine->quit();
+                break;
+            case SDL_MOUSEMOTION:
+                renderMyGrid( engine );
+                break;
+            case SDL_MOUSEBUTTONDOWN:
+                auto coord = getMousePos();
+                myGrid = engine->logic.getClickableMatrix( coord.first, coord.second );
+                pt = myGrid.get();
+                break;
+            }
+        }
+    }
 }
 
 PlayScene *PlayScene::Instance()
