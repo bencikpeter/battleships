@@ -122,9 +122,12 @@ namespace network {
     //private: /*FOR TESTING PURPOSES*/
         bool isInitMessage(std::vector<char> message){
             std::string toBeTested = toString(message);
-            //std::regex reg ("^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$");
-            std::regex reg("^(\\d+)\\.(\\d+)\\.(\\d+)\\.(\\d+)$"); //wont be sending numerical stuff, so this is sufficient
-            return true; //std::regex_match(toBeTested,reg);
+            asio::error_code ec;
+            asio::ip::address::from_string(toBeTested, ec);
+            if (ec){
+                return false;
+            }
+            return true;
         }
         
         std::vector<char> toCharVector(std::string const &_string){
