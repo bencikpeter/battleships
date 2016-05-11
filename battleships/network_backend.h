@@ -69,8 +69,10 @@ namespace network {
         bool initialize() {
             try {
                 std::string ip_address = getMyIPAddress();
+                /*send_buf.clear();
                 send_buf = toCharVector(ip_address);
-                socket.send_to(asio::buffer(send_buf), rec_endpoint);
+                socket.send_to(asio::buffer(send_buf), rec_endpoint);*/
+                sender(toCharVector(ip_address));
                 return true;
             }catch (std::exception& ex ) {
                 return false;
@@ -111,6 +113,7 @@ namespace network {
          * @returns message recieved message
          */
         std::vector<char> listener(){
+            rec_buf.clear();
             rec_buf.resize(1024);
             size_t len = socket.receive_from(asio::buffer(rec_buf), send_endpoint);
             return rec_buf;
@@ -172,8 +175,8 @@ namespace network {
         
         bool isLocalAddress(std::string const& address){
             //std::regex reg("(^127\..*)|(^10\..*)|(^172\.1[6-9]\..*)|(^172\.2[0-9]\..*)|(^172\.3[0-1]\..*)|(^192\.168\..*)");
-            std::regex reg("^192\\.168\\..*");
-            return true; //std::regex_match(address, reg);
+            std::regex reg("^147\\.251\\..*");
+            return std::regex_match(address, reg);
         }
         
     };
