@@ -2,8 +2,8 @@
 #define MENUSCENE_H
 
 #include <vector>
-#include <menuitem.h>
-#include <gamescene.h>
+#include "menuitem.h"
+#include "gamescene.h"
 
 class MenuScene : public GameScene
 {
