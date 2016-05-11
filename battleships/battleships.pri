@@ -7,7 +7,8 @@ SOURCES += 'battleships/main.cpp' \
     $$PWD/menuitem.cpp \
     $$PWD/connectscene.cpp \
     $$PWD/hostscene.cpp \
-    $$PWD/business_logic_backend.cpp
+    $$PWD/business_logic_backend.cpp \
+    $$PWD/playscene.cpp
 
 HEADERS += \
     $$PWD/network_backend.h \
@@ -20,4 +21,5 @@ HEADERS += \
     $$PWD/menuitem.h \
     $$PWD/connectscene.h \
     $$PWD/hostscene.h \
-    $$PWD/business_logic_matrix.h
+    $$PWD/business_logic_matrix.h \
+    $$PWD/playscene.h

@@ -1,4 +1,5 @@
 #include "hostscene.h"
+#include "playscene.h"
 #include "network_backend.h"
 #include <future>
 
@@ -37,9 +38,9 @@ HostScene::HostScene()
 
 void HostScene::init(GameEngine *engine)
 {
-    /*host = std::async( std::launch::async,
+    host = std::async( std::launch::async,
                        &logic::Logic::host,
-                       &(engine->logic) );*/
+                       &(engine->logic) );
     menu.push_back( MenuItem( "Waiting for other player", engine->font ) );
     menu.push_back( MenuItem( "Back", engine->font ) );
 
@@ -109,12 +110,14 @@ void HostScene::runScene(GameEngine *engine)
             break;
         case SDL_MOUSEBUTTONDOWN:
             if ( menu[1].isSelected() ) {
+                engine->logic.resetSocket();
                 engine->popScene();
             }
             break;
         }
-        if ( engine->logicEventType == event.type ) {
-            //TODO niekto sa pripojil na siet
+        if ( engine->logicEventType == event.type && event.user.code == HOST ) {
+            // TODO niekto sa pripojil na siet
+            engine->pushScene( PlayScene::Instance() );
         }
     }
 }
