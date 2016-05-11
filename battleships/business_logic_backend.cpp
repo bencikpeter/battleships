@@ -195,7 +195,7 @@ bool logic::Logic::host(){
 
 void logic::Logic::resetSocket()
 {
-//net->resetsocket() + logicEvent?
+    net->socketReset();
 }
 
 bool logic::Logic::isIpValid(std::string ip){
