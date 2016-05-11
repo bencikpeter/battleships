@@ -18,14 +18,18 @@ void PlayScene::renderMyGrid(GameEngine *engine)
             rect.h = j * cellHeight;
             if ( myGrid.get()[ i ][ j ] == logic::WATER_NOT_SHOT ) {
                 engine->renderer.setRenderColor( 64, 164, 223, 255 );
-                SDL_RenderFillRect( engine->renderer.renderer, &rect);
             } else if ( myGrid.get()[ i ][ j ] == logic::WATER_SHOT ) {
                 engine->renderer.setRenderColor( 0, 0, 139, 255 );
             } else if ( myGrid.get()[ i ][ j ] == logic::SHIP_NOT_SHOT ) {
                 engine->renderer.setRenderColor( 130, 82, 1, 255 );
             } else if ( myGrid.get()[ i ][ j ] == logic::SHIP_SHOT ) {
                 engine->renderer.setRenderColor( 0, 0, 0, 255 );
+            } else if ( myGrid.get()[ i ][ j ] == logic::CLICKABLE ) {
+                engine->renderer.setRenderColor( 64, 164, 223, 255 );
+            } else if ( myGrid.get()[ i ][ j ] == logic::NOT_CLICKABLE ) {
+                engine->renderer.setRenderColor( 116, 127, 151, 255 );
             }
+            SDL_RenderFillRect( engine->renderer.renderer, &rect);
         }
     }
     engine->renderer.render();
