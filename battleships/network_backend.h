@@ -18,6 +18,7 @@
 //#include <sys/types.h>
 #include <ifaddrs.h>
 #include <memory>
+#include <mutex>
 //#include <netinet/in.h>
 //#include <arpa/inet.h>
 
@@ -31,8 +32,6 @@ namespace network {
     class NetworkManager {
         
         asio::io_service io_service;
-        //ip::udp::socket socket;
-        
         std::unique_ptr<ip::udp::socket> socket;
         
         ip::udp::endpoint rec_endpoint ;
@@ -75,7 +74,7 @@ namespace network {
         bool initialize() {
             try {
                 std::string ip_address = getMyIPAddress();
-                sender(toCharVector(ip_address));
+                _sender(toCharVector(ip_address));
                 return true;
             }catch (std::exception& ex ) {
                 return false;
@@ -87,7 +86,7 @@ namespace network {
          * @returns true of succesfull
          */
         bool waitForIinit(){
-            listener();
+            _listener();
             if (isIPAddress(toString(rec_buf))) {
                 ip::udp::resolver resolver(io_service);
                 ip::udp::resolver::query query(ip::udp::v4(), toString(rec_buf), "1337");
