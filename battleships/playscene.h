@@ -5,14 +5,13 @@
 
 class PlayScene : public GameScene
 {
-    using logic::Matrix;
 private:
     static PlayScene playScene;
     SDL_Event event;
-    std::future<std::pair> enemyShot;
-    std::future<Matrix> enemyLayout;
-    Matrix myGrid;
-    Matrix enemyGrid;
+    std::future<std::pair< int,int > > enemyShot;
+    std::future<logic::Matrix> enemyLayout;
+    logic::Matrix myGrid;
+    logic::Matrix enemyGrid;
 
     void renderMyGrid(GameEngine *engine);
 
