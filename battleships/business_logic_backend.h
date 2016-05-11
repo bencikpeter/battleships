@@ -114,6 +114,8 @@ public:
      */
     Matrix getClickableMatrix(int x, int y);
 
+    Matrix getClickableMatrix();
+
     bool checkIfAllShipsPlaced();
 
 
