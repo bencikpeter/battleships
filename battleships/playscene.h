@@ -21,6 +21,7 @@ private:
 
     void renderMyGrid(GameEngine *engine);
     std::pair< int, int > getMousePos();
+    void renderCell(GameEngine *engine, SDL_Rect *rect , int r, int g, int b);
 
 protected:
     PlayScene();

@@ -12,19 +12,18 @@ void PlayScene::renderMyGrid(GameEngine *engine)
             rect.x = i * cellWidth;
             rect.y = j * cellHeight;
             if ( myGrid.get()[ i ][ j ] == logic::WATER_NOT_SHOT ) {
-                engine->renderer.setRenderColor( 64, 164, 223, 255 );
+                renderCell( engine, &rect, 64, 164, 223);
             } else if ( myGrid.get()[ i ][ j ] == logic::WATER_SHOT ) {
-                engine->renderer.setRenderColor( 0, 0, 139, 255 );
+                renderCell( engine, &rect, 0, 0, 139 );
             } else if ( myGrid.get()[ i ][ j ] == logic::SHIP_NOT_SHOT ) {
-                engine->renderer.setRenderColor( 130, 82, 1, 255 );
+                renderCell( engine, &rect, 130, 82, 1);
             } else if ( myGrid.get()[ i ][ j ] == logic::SHIP_SHOT ) {
-                engine->renderer.setRenderColor( 0, 0, 0, 255 );
+                renderCell( engine, &rect, 0, 0, 0);
             } else if ( myGrid.get()[ i ][ j ] == logic::CLICKABLE ) {
-                engine->renderer.setRenderColor( 64, 164, 223, 255 );
+                renderCell( engine, &rect, 64, 164, 223);
             } else if ( myGrid.get()[ i ][ j ] == logic::NOT_CLICKABLE ) {
-                engine->renderer.setRenderColor( 116, 127, 151, 255 );
+                renderCell( engine, &rect, 116, 127, 151);
             }
-            SDL_RenderFillRect( engine->renderer.renderer, &rect);
         }
     }
     engine->renderer.render();
@@ -39,6 +38,14 @@ std::pair<int, int> PlayScene::getMousePos()
     coordinates.first = x / cellWidth;
     coordinates.second = y / cellHeight;
     return coordinates;
+}
+
+void PlayScene::renderCell( GameEngine *engine, SDL_Rect *rect, int r, int g, int b )
+{
+    engine->renderer.setRenderColor( r, g, b, 255 );
+    SDL_RenderFillRect( engine->renderer.renderer, rect );
+    engine->renderer.setRenderColor( 0, 0, 0, 255 );
+    SDL_RenderDrawRect( engine->renderer.renderer, rect );
 }
 
 PlayScene::PlayScene()

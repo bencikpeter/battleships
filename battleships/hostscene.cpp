@@ -40,7 +40,7 @@ void HostScene::init(GameEngine *engine)
 {
     host = std::async( std::launch::async,
                        &logic::Logic::host,
-                       &(engine->logic) );
+                       &engine->logic );
     menu.push_back( MenuItem( "Waiting for other player", engine->font ) );
     menu.push_back( MenuItem( "Back", engine->font ) );
 

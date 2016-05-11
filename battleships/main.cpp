@@ -5,7 +5,7 @@
 //  Created by Peter Bencik on 26.04.16.
 //  Copyright © 2016 Peter Bencik. All rights reserved.
 //
-/*
+
 #include <iostream>
 #include "SDL.h"
 #include "SDL_ttf.h"
@@ -25,7 +25,7 @@ int main ( )
     }
 
     return 0;
-}*/
+}
 
 //
 //  main.cpp
@@ -36,7 +36,7 @@ int main ( )
 //
 
 
-
+/*
 #include <iostream>
 #include "network_backend.h"
 
@@ -108,3 +108,4 @@ int main(int argc, char* argv[]){
     }
 }
 
+*/

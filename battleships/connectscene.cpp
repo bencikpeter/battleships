@@ -85,7 +85,12 @@ void ConnectScene::runScene(GameEngine *engine)
                 engine->popScene();
             }
             if ( menu[3].isSelected() ) {
-                engine->pushScene( PlayScene::Instance() );
+                if ( engine->logic.isIpValid( inputText ) ) {
+                    connectionSuccesful = std::async( std::launch::async,
+                                                      &logic::Logic::connect,
+                                                      &engine->logic,
+                                                      inputText );
+                }
             }
             break;
         case SDL_KEYDOWN:
@@ -98,6 +103,12 @@ void ConnectScene::runScene(GameEngine *engine)
             inputText += event.text.text;
             renderConnectScene( engine );
             break;
+        }
+        if ( engine->logicEventType == event.type && event.user.code == CONNECT ) {
+            // TODO niekto sa pripojil na siet
+            if ( connectionSuccesful.get() ){
+                engine->pushScene( PlayScene::Instance() );
+            }
         }
     }
 }

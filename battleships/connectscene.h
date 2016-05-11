@@ -12,6 +12,7 @@ private:
     static ConnectScene connectScene;
     SDL_Event event;
     std::vector<MenuItem> menu;
+    std::future<bool> connectionSuccesful;
 
     void renderConnectScene(GameEngine *engine);
 
