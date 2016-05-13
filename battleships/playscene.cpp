@@ -208,6 +208,7 @@ void PlayScene::runScene(GameEngine *engine)
                         enemyGrid.get()[ mouseCoord.first ][ mouseCoord.second ] = logic::SHIP_SHOT;
                         renderEnemyGrid( engine );
                     } else {
+                        enemyGrid.get()[ mouseCoord.first ][ mouseCoord.second ] = logic::WATER_SHOT;
                         phase = 2;
                         renderMyGrid( engine );
                     }
@@ -216,15 +217,6 @@ void PlayScene::runScene(GameEngine *engine)
                                        &engine->logic,
                                        mouseCoord.first,
                                        mouseCoord.second );
-                }
-            }
-            if ( event.type == engine->logicEventType
-                 && event.user.code == ENEMY_SHOT ) {
-                shot = enemyShot.get();
-                if ( myGrid.get()[ shot.first ][ shot.second ] == logic::SHIP_NOT_SHOT ) {
-                    myGrid.get()[ shot.first ][ shot.second ] = logic::SHIP_SHOT;
-                } else if ( myGrid.get()[ shot.first ][ shot.second ] == logic::WATER_NOT_SHOT ) {
-                    myGrid.get()[ shot.first ][ shot.second ] = logic::WATER_SHOT;
                 }
             }
         }
