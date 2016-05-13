@@ -287,13 +287,13 @@ bool logic::Logic::checkIfAllShipsPlaced()
 
 void logic::Logic::resetLayout()
 {
-    std::lock_guard guard1(mutexInsert);
+    std::lock_guard<std::mutex> guard1(mutexInsert);
     count2 = 4;
     count3 = 3;
     count4 = 2;
     count6 = 1;
-    guard.~lock_guard();
-    std::lock_guard guard2(mutexMy);
+    guard1.~lock_guard();
+    std::lock_guard<std::mutex> guard2(mutexMy);
     for (int i = 0; i < 10; i++){
         for (int j = 0; j < 10; j++){
             myShips[i][j] == WATER_NOT_SHOT;
