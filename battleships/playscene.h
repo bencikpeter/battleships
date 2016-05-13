@@ -27,6 +27,7 @@ private:
     bool layoutReceived;
     bool layoutSent;
     bool getLayout;
+    bool getShot;
 
     void renderMyGrid(GameEngine *engine);
     void renderEnemyGrid(GameEngine *engine);

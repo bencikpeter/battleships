@@ -83,6 +83,7 @@ void PlayScene::init(GameEngine *engine)
     layoutReceived = false;
     layoutSent = false;
     getLayout = false;
+    getShot = false;
     int width;
     int height;
     SDL_GetRendererOutputSize( engine->renderer.renderer, &width, &height );
@@ -185,7 +186,7 @@ void PlayScene::runScene(GameEngine *engine)
                                           &engine->logic );
                 getLayout = true;
             }
-            if ( layoutReceived && layoutSent && host) {
+            if ( layoutReceived && layoutSent && host ) {
                 phase = 2;
                 renderMyGrid( engine );
             } else if ( layoutReceived && layoutSent && !host ) {
@@ -214,9 +215,6 @@ void PlayScene::runScene(GameEngine *engine)
                     } else {
                         phase = 2;
                         renderMyGrid( engine );
-                        enemyShot = std::async( std::launch::async,
-                                                &logic::Logic::getEnemyShot,
-                                                &engine->logic );
                     }
                 }
             }
@@ -231,6 +229,12 @@ void PlayScene::runScene(GameEngine *engine)
             }
         }
     } else if ( phase == 2 ) {
+        if ( !getShot ) {
+            enemyShot =  std::async( std::launch::async,
+                                     &logic::Logic::getEnemyShot,
+                                     &engine->logic );
+            getShot = true;
+        }
         if ( SDL_WaitEvent( &event ) ) {
             switch ( event.type ) {
             case SDL_QUIT:
@@ -242,15 +246,13 @@ void PlayScene::runScene(GameEngine *engine)
                 shot = enemyShot.get();
                 if ( myGrid.get()[ shot.first ][ shot.second ] == logic::SHIP_NOT_SHOT ) {
                     myGrid.get()[ shot.first ][ shot.second ] = logic::SHIP_SHOT;
-                    enemyShot =  std::async( std::launch::async,
-                                             &logic::Logic::getEnemyShot,
-                                             &engine->logic );
                     renderMyGrid( engine );
                 } else if ( myGrid.get()[ shot.first ][ shot.second ] == logic::WATER_NOT_SHOT ) {
                     myGrid.get()[ shot.first ][ shot.second ] = logic::WATER_SHOT;
                     phase = 1;
                     renderEnemyGrid( engine );
                 }
+                getShot = false;
             }
         }
     }
