@@ -82,6 +82,7 @@ void PlayScene::init(GameEngine *engine)
     ready = false;
     layoutReceived = false;
     layoutSent = false;
+    getLayout = false;
     int width;
     int height;
     SDL_GetRendererOutputSize( engine->renderer.renderer, &width, &height );
@@ -178,10 +179,11 @@ void PlayScene::runScene(GameEngine *engine)
                                    &engine->logic );
                 ready = false; // so this branch would not be entered twice
             }
-            if ( !host && layoutSent && !layoutReceived ) {
+            if ( !host && layoutSent && !layoutReceived && !getLayout) {
                 enemyLayout = std::async( std::launch::async,
                                           &logic::Logic::getEnemyShipLayout,
                                           &engine->logic );
+                getLayout = true;
             }
             if ( layoutReceived && layoutSent && host) {
                 phase = 2;
