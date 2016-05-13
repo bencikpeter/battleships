@@ -26,6 +26,7 @@ private:
     bool host;
     bool layoutReceived;
     bool layoutSent;
+    bool getLayout;
 
     void renderMyGrid(GameEngine *engine);
     void renderEnemyGrid(GameEngine *engine);
