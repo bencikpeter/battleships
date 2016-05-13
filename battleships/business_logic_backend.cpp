@@ -196,13 +196,11 @@ bool logic::Logic::host(){
 
 void logic::Logic::resetSocket()
 {
-//net->resetsocket() + logicEvent?
     try{
         net->socketReset();
     } catch(std::exception ex) {
         std::cout << "thrown exception" << ex.what() << std::endl;
     }
-
 }
 
 bool logic::Logic::isIpValid(std::string ip){
