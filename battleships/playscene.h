@@ -10,6 +10,7 @@ private:
     SDL_Event event;
     std::future<std::pair< int,int > > enemyShot;
     std::future<logic::Matrix> enemyLayout;
+    std::future<void> temp;
     logic::Matrix myGrid;
     logic::Matrix enemyGrid;
     int phase;
@@ -18,8 +19,16 @@ private:
     bool clicked;
     std::pair< int, int > shipBegin;
     std::pair< int, int > shipEnd;
+    std::pair< int, int > mouseCoord;
+    std::pair< int, int > shot;
+    bool shipsPlaced;
+    bool ready;
+    bool host;
+    bool layoutReceived;
+    bool layoutSent;
 
     void renderMyGrid(GameEngine *engine);
+    void renderEnemyGrid(GameEngine *engine);
     std::pair< int, int > getMousePos();
     void renderCell(GameEngine *engine, SDL_Rect *rect , int r, int g, int b);
 

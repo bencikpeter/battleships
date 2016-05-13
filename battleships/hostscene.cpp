@@ -112,13 +112,15 @@ void HostScene::runScene(GameEngine *engine)
             if ( menu[1].isSelected() ) {
                 engine->logic.resetSocket();
                 engine->popScene();
-
             }
             break;
         }
         if ( engine->logicEventType == event.type && event.user.code == HOST ) {
-            // TODO niekto sa pripojil na siet
-            engine->pushScene( PlayScene::Instance() );
+            // niekto sa pripojil na siet
+            if ( host.get() ) {
+                LogicEvent ev( HOST ); // event for PlayScene to recognize, that this client is hosting the game
+                engine->pushScene( PlayScene::Instance() );
+            }
         }
     }
 }

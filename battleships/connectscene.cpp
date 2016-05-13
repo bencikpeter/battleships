@@ -105,8 +105,9 @@ void ConnectScene::runScene(GameEngine *engine)
             break;
         }
         if ( engine->logicEventType == event.type && event.user.code == CONNECT ) {
-            // TODO niekto sa pripojil na siet
             if ( connectionSuccesful.get() ){
+                // na niekoho som sa pripojil
+                LogicEvent ev( CONNECT ); // event for PlayScene to recognize, that this client is connected to host
                 engine->pushScene( PlayScene::Instance() );
             }
         }

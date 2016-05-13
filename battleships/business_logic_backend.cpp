@@ -190,12 +190,19 @@ bool logic::Logic::connect(std::string ip){
 bool logic::Logic::host(){
     net = new network::NetworkManager();
     auto e = LogicEvent(HOST);
-    return net->waitForIinit();
+    bool tmp = net->waitForIinit();
+    return tmp;
 }
 
 void logic::Logic::resetSocket()
 {
 //net->resetsocket() + logicEvent?
+    try{
+        net->socketReset();
+    } catch(std::exception ex) {
+        std::cout << "thrown exception" << ex.what() << std::endl;
+    }
+
 }
 
 bool logic::Logic::isIpValid(std::string ip){
