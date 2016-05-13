@@ -143,6 +143,7 @@ void logic::Logic::shootSend(int x, int y){
 
 bool logic::Logic::shootCheck(int x, int y){
     std::lock_guard<std::mutex> guard(mutexEnemy);
+    std::cout << Matrix(enemyShips) << std::endl;
     if (enemyShips[x][y] == SHIP_NOT_SHOT) {
         return true;
     }
@@ -282,6 +283,22 @@ logic::Matrix logic::Logic::getClickableMatrix()
 bool logic::Logic::checkIfAllShipsPlaced()
 {
     return (count2 == 0) && (count3 == 0) && (count4 == 0) && (count6 == 0);
+}
+
+void logic::Logic::resetLayout()
+{
+    std::lock_guard guard1(mutexInsert);
+    count2 = 4;
+    count3 = 3;
+    count4 = 2;
+    count6 = 1;
+    guard.~lock_guard();
+    std::lock_guard guard2(mutexMy);
+    for (int i = 0; i < 10; i++){
+        for (int j = 0; j < 10; j++){
+            myShips[i][j] == WATER_NOT_SHOT;
+        }
+    }
 }
 
 std::vector<char> logic::Logic::encodeCoords(int x, int y){

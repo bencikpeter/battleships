@@ -118,6 +118,7 @@ public:
 
     bool checkIfAllShipsPlaced();
 
+    void resetLayout();
 
 
 private:
