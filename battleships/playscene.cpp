@@ -204,11 +204,6 @@ void PlayScene::runScene(GameEngine *engine)
                 mouseCoord = getMousePos();
                 if ( enemyGrid.get()[ mouseCoord.first ][ mouseCoord.second ] != logic::SHIP_SHOT
                      && enemyGrid.get()[ mouseCoord.first ][ mouseCoord.second ] != logic::WATER_SHOT ) {
-                    temp = std::async( std::launch::async,
-                                       &logic::Logic::shootSend,
-                                       &engine->logic,
-                                       mouseCoord.first,
-                                       mouseCoord.second );
                     if ( engine->logic.shootCheck( mouseCoord.first, mouseCoord.second ) ) {
                         enemyGrid.get()[ mouseCoord.first ][ mouseCoord.second ] = logic::SHIP_SHOT;
                         renderEnemyGrid( engine );
@@ -216,6 +211,11 @@ void PlayScene::runScene(GameEngine *engine)
                         phase = 2;
                         renderMyGrid( engine );
                     }
+                    temp = std::async( std::launch::async,
+                                       &logic::Logic::shootSend,
+                                       &engine->logic,
+                                       mouseCoord.first,
+                                       mouseCoord.second );
                 }
             }
             if ( event.type == engine->logicEventType
