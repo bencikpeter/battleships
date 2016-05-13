@@ -171,7 +171,6 @@ void PlayScene::runScene(GameEngine *engine)
                                    &logic::Logic::sendMyLayout,
                                    &engine->logic );
                 ready = false; // so this branch would not be entered twice
-                phase = 1;
             }
             if ( !host && ready ) {
                 temp = std::async( std::launch::async,
