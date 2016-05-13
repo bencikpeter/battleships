@@ -164,6 +164,7 @@ void PlayScene::runScene(GameEngine *engine)
             } else if ( event.type == engine->logicEventType
                         && event.user.code == SEND_LAYOUT ) {
                 layoutSent = true;
+                myGrid = engine->logic.getMyShips();
             }
             if ( ready && host && layoutReceived ) {
                 temp = std::async( std::launch::async,
@@ -201,13 +202,13 @@ void PlayScene::runScene(GameEngine *engine)
                 mouseCoord = getMousePos();
                 if ( enemyGrid.get()[ mouseCoord.first ][ mouseCoord.second ] != logic::SHIP_SHOT
                      && enemyGrid.get()[ mouseCoord.first ][ mouseCoord.second ] != logic::WATER_SHOT ) {
+                    temp = std::async( std::launch::async,
+                                       &logic::Logic::shootSend,
+                                       &engine->logic,
+                                       mouseCoord.first,
+                                       mouseCoord.second );
                     if ( engine->logic.shootCheck( mouseCoord.first, mouseCoord.second ) ) {
                         enemyGrid.get()[ mouseCoord.first ][ mouseCoord.second ] = logic::SHIP_SHOT;
-                        temp = std::async( std::launch::async,
-                                           &logic::Logic::shootSend,
-                                           &engine->logic,
-                                           mouseCoord.first,
-                                           mouseCoord.second );
                         renderEnemyGrid( engine );
                     } else {
                         phase = 2;
