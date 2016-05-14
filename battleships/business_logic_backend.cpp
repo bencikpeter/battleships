@@ -13,6 +13,26 @@ logic::Logic::~Logic(){
     delete net;
 }
 
+logic::Logic::Logic(logic::Logic && other) : myShips(other.myShips), enemyShips(other.enemyShips), countMy(other.countMy), countEnemy(other.countEnemy), net(other.net),
+count2(other.count2), count3(other.count3), count4(other.count4), count6(other.count6) {
+    other.myShips = nullptr;
+    other.enemyShips = nullptr;
+}
+
+logic::Logic &logic::Logic::operator=(logic::Logic && other)
+{
+    std::swap(myShips,other.myShips);
+    std::swap(enemyShips,other.enemyShips);
+    std::swap(countMy,other.countMy);
+    std::swap(countEnemy,other.countEnemy);
+    std::swap(net,other.net);
+    std::swap(count2,other.count2);
+    std::swap(count3,other.count3);
+    std::swap(count4,other.count4);
+    std::swap(count6,other.count6);
+    return *this;
+}
+
 logic::Logic::Logic(): myShips(new CellType*[10]), enemyShips(new CellType*[10]), countMy(31), countEnemy(31), net(nullptr),
                        count2(4), count3(3), count4(2), count6(1){
     std::lock_guard<std::mutex> guard1(mutexMy);
@@ -145,7 +165,6 @@ void logic::Logic::shootSend(int x, int y){
 
 bool logic::Logic::shootCheck(int x, int y){
     std::lock_guard<std::mutex> guard(mutexEnemy);
-    std::cout << Matrix(enemyShips) << std::endl;
     if (enemyShips[x][y] == SHIP_NOT_SHOT) {
         return true;
     }
@@ -298,7 +317,7 @@ void logic::Logic::resetLayout()
     std::lock_guard<std::mutex> guard2(mutexMy);
     for (int i = 0; i < 10; i++){
         for (int j = 0; j < 10; j++){
-            myShips[i][j] == WATER_NOT_SHOT;
+            myShips[i][j] = WATER_NOT_SHOT;
         }
     }
 }

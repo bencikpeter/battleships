@@ -43,6 +43,8 @@ private:
 public:
     Logic();
     ~Logic();
+    Logic(Logic &&);
+    Logic& operator=(Logic &&);
 
     /**
      * @brief insertShip
