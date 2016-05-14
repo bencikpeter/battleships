@@ -64,6 +64,10 @@ public:
      */
     Uint32 getLogicEventType() const;
 
+    void reset();
+
+    int scenesNumber();
+
     bool isRunning() const;
 
     TTF_Font *font;

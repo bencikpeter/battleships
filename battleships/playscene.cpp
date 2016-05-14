@@ -1,4 +1,6 @@
 #include "playscene.h"
+#include "lostscene.h"
+#include "wonscene.h"
 
 PlayScene PlayScene::playScene;
 
@@ -18,7 +20,7 @@ void PlayScene::renderMyGrid(GameEngine *engine)
             } else if ( myGrid.get()[ i ][ j ] == logic::SHIP_NOT_SHOT ) {
                 renderCell( engine, &rect, 130, 82, 1);
             } else if ( myGrid.get()[ i ][ j ] == logic::SHIP_SHOT ) {
-                renderCell( engine, &rect, 0, 0, 20);
+                renderCell( engine, &rect, 255, 0, 0);
             } else if ( myGrid.get()[ i ][ j ] == logic::CLICKABLE ) {
                 renderCell( engine, &rect, 64, 164, 223);
             } else if ( myGrid.get()[ i ][ j ] == logic::NOT_CLICKABLE ) {
@@ -40,7 +42,7 @@ void PlayScene::renderEnemyGrid(GameEngine *engine) {
             if ( enemyGrid.get()[ i ][ j ] == logic::WATER_SHOT ) {
                 renderCell( engine, &rect, 0, 0, 139 );
             } else if ( enemyGrid.get()[ i ][ j ] == logic::SHIP_SHOT ) {
-                renderCell( engine, &rect, 20, 20, 20);
+                renderCell( engine, &rect, 255, 0, 0);
             } else {
                 renderCell( engine, &rect, 64, 164, 223);
             }
@@ -195,6 +197,11 @@ void PlayScene::runScene(GameEngine *engine)
             }
         }
     } else if ( phase == 1 ) {
+        if ( engine->logic.checkIfGameEnds() == logic::WON ) {
+            engine->pushScene( WonScene::Instance() );
+        } else if ( engine->logic.checkIfGameEnds() == logic::LOST ) {
+            engine->pushScene( LostScene::Instance() );
+        }
         if ( SDL_WaitEvent( &event ) ) {
             switch ( event.type ) {
             case SDL_QUIT:
@@ -221,6 +228,11 @@ void PlayScene::runScene(GameEngine *engine)
             }
         }
     } else if ( phase == 2 ) {
+        if ( engine->logic.checkIfGameEnds() == logic::WON ) {
+            engine->pushScene( WonScene::Instance() );
+        } else if ( engine->logic.checkIfGameEnds() == logic::LOST ) {
+            engine->pushScene( LostScene::Instance() );
+        }
         if ( !getShot ) {
             enemyShot =  std::async( std::launch::async,
                                      &logic::Logic::getEnemyShot,

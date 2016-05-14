@@ -97,6 +97,16 @@ Uint32 GameEngine::getLogicEventType() const
     return logicEventType;
 }
 
+void GameEngine::reset()
+{
+
+}
+
+int GameEngine::scenesNumber()
+{
+    return scenes.size();
+}
+
 bool GameEngine::isRunning() const
 {
     return running;
