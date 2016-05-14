@@ -63,7 +63,7 @@ void ConnectScene::pause()
     SDL_StopTextInput();
 }
 
-void ConnectScene::resume(GameEngine *engine)
+void ConnectScene::resume(GameEngine *)
 {
     SDL_StartTextInput();
 }

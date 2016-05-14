@@ -93,7 +93,7 @@ void HostScene::pause()
 
 }
 
-void HostScene::resume(GameEngine *engine)
+void HostScene::resume(GameEngine *)
 {
 
 }

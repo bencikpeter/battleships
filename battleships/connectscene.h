@@ -25,7 +25,7 @@ protected:
     // GameScene interface
 public:
     void pause() override;
-    void resume(GameEngine *engine) override;
+    void resume(GameEngine *) override;
     void runScene(GameEngine *engine) override;
     void init(GameEngine *engine) override;
     void clean() override;

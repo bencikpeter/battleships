@@ -35,7 +35,7 @@ void LostScene::pause()
 
 }
 
-void LostScene::resume(GameEngine *engine)
+void LostScene::resume(GameEngine *)
 {
 
 }

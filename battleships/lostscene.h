@@ -21,7 +21,7 @@ public:
     void init(GameEngine *engine) override;
     void clean() override;
     void pause() override;
-    void resume(GameEngine *engine) override;
+    void resume(GameEngine *) override;
     void runScene(GameEngine *engine) override;
 
     static LostScene* Instance();

@@ -109,7 +109,7 @@ void PlayScene::pause()
 
 }
 
-void PlayScene::resume(GameEngine *engine)
+void PlayScene::resume(GameEngine *)
 {
 
 }
@@ -134,10 +134,10 @@ void PlayScene::runScene(GameEngine *engine)
                     } else if ( clicked ) {
                         shipEnd = getMousePos();
                         if ( myGrid.get()[ shipEnd.first ][ shipEnd.second ] == logic::CLICKABLE ) {
-                            bool correct = engine->logic.insertShip( shipBegin.first,
-                                                                     shipBegin.second,
-                                                                     shipEnd.first,
-                                                                     shipEnd.second );
+                            engine->logic.insertShip( shipBegin.first,
+                                                      shipBegin.second,
+                                                      shipEnd.first,
+                                                      shipEnd.second );
                             clicked = false;
                             myGrid = engine->logic.getClickableMatrix();
                             shipsPlaced = engine->logic.checkIfAllShipsPlaced();
@@ -228,6 +228,9 @@ void PlayScene::runScene(GameEngine *engine)
             }
         }
     } else if ( phase == 2 ) {
+        if ( temp.valid() ) {
+            temp.get();
+        }
         if ( engine->logic.checkIfGameEnds() == logic::WON ) {
             engine->pushScene( WonScene::Instance() );
         } else if ( engine->logic.checkIfGameEnds() == logic::LOST ) {

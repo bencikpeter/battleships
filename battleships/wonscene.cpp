@@ -35,7 +35,7 @@ void WonScene::pause()
 
 }
 
-void WonScene::resume(GameEngine *engine)
+void WonScene::resume(GameEngine *)
 {
 
 }
