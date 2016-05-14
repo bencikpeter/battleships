@@ -125,12 +125,14 @@ void logic::Logic::sendMyLayout(){
         }
     }
     guard.~lock_guard();
-    net->sender(encodeMyLayout());
+    auto a = encodeMyLayout();
+    while (!net->sender(a));
     auto e = LogicEvent(SEND_LAYOUT);
 }
 
 void logic::Logic::shootSend(int x, int y){
-    net->sender(encodeCoords(x,y));
+    auto a = encodeCoords(x,y);
+    while (!net->sender(a));
     std::lock_guard<std::mutex> guard(mutexEnemy);
     if (enemyShips[x][y] == SHIP_NOT_SHOT) {
         enemyShips[x][y] = SHIP_SHOT;
