@@ -72,7 +72,7 @@ public:
     friend std::ostream& operator<<(std::ostream& os, const Matrix& m){
         for (int i = 0; i < 10; i++){
             for (int j = 0; j < 10; j++){
-                os << m.matrix[i][j] << " ";
+                os << m.matrix[j][i] << " ";
             }
             os << std::endl;
         }
