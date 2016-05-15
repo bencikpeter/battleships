@@ -18,8 +18,11 @@ GameEngine::GameEngine( const char* title, int width, int height )
     font = nullptr;
     font = TTF_OpenFont( "../battleships/a.ttf", 72 );
     if ( font == nullptr ) {
-        std::cerr << "Failed to initialize SDL_TTF : " << SDL_GetError() << std::endl;
-        exit(1);
+        font = TTF_OpenFont( "a.ttf", 72 );
+        if ( font == nullptr ) {
+            std::cerr << "Failed to initialize SDL_TTF : " << SDL_GetError() << std::endl;
+            exit(1);
+        }
     }
 
     logicEventType = SDL_RegisterEvents( 1 );
@@ -99,7 +102,7 @@ Uint32 GameEngine::getLogicEventType() const
 
 void GameEngine::reset()
 {
-
+    logic = logic::Logic();
 }
 
 int GameEngine::scenesNumber()

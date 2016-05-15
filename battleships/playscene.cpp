@@ -92,10 +92,6 @@ void PlayScene::init(GameEngine *engine)
     cellWidth = width / 10;
     cellHeight = height / 10;
     myGrid = engine->logic.getClickableMatrix();
-
-  /*  enemyLayout = std::async( std::launch::async,
-                              &logic::Logic::getEnemyShipLayout,
-                              &engine->logic ); */
     renderMyGrid( engine );
 }
 
@@ -231,11 +227,6 @@ void PlayScene::runScene(GameEngine *engine)
         if ( temp.valid() ) {
             temp.get();
         }
-        if ( engine->logic.checkIfGameEnds() == logic::WON ) {
-            engine->pushScene( WonScene::Instance() );
-        } else if ( engine->logic.checkIfGameEnds() == logic::LOST ) {
-            engine->pushScene( LostScene::Instance() );
-        }
         if ( !getShot ) {
             enemyShot =  std::async( std::launch::async,
                                      &logic::Logic::getEnemyShot,
@@ -260,6 +251,17 @@ void PlayScene::runScene(GameEngine *engine)
                     renderEnemyGrid( engine );
                 }
                 getShot = false;
+            }
+            if ( engine->logic.checkIfGameEnds() == logic::WON ) {
+                engine->pushScene( WonScene::Instance() );
+                if ( enemyShot.valid() ) {
+                    enemyShot.get();
+                }
+            } else if ( engine->logic.checkIfGameEnds() == logic::LOST ) {
+                engine->pushScene( LostScene::Instance() );
+                if ( enemyShot.valid() ) {
+                    enemyShot.get();
+                }
             }
         }
     }
