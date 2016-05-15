@@ -18,12 +18,9 @@
 #include "logicevent.h"
 
 namespace logic {
+//enum CellType implemented in bussunes_logic_matrix.h
 //enum CellType { SHIP_NOT_SHOT, SHIP_SHOT, WATER_NOT_SHOT, WATER_SHOT, CLICKABLE, NOT_CLICKABLE };
 enum GameEnd { WON, LOST, PLAY };
-/**
- * @brief The Matrix class holds ships layout and always copies it when created so GUI can work with it whithout mutex locking
- */
-
 
 class Logic {
 private:
@@ -48,10 +45,10 @@ public:
 
     /**
      * @brief insertShip
-     * @param x index from left (0) to right (9)
-     * @param y index from top (0) to bottom (9)
-     * @param horizontal true if ship is in horizontal orientation false for vertical
-     * @param length length of ship
+     * @param x1 index from left (0) to right (9)
+     * @param y1 index from top (0) to bottom (9)
+     * @param x2 other end of ship
+     * @param y2 other end of ship
      * @return true if ship was legaly placed
      */
     bool insertShip(int x1, int y1, int x2, int y2);
@@ -59,55 +56,75 @@ public:
     /**
      * @brief sendMyLayout when finished layout this function is called with std::async and before that getEnemyShipLayout() is also called to get enemy layout
      */
-    void sendMyLayout();
+    void sendMyLayout();//async
 
     /**
      * @brief shoot called with std::async and position of shot and before that getEnemyShot() is called
      * @param x index from left (0) to right (9)
      * @param y index from top (0) to bottom (9)
+     */
+    void shootSend(int x, int y);//async
+
+    /**
+     * @brief checks if shot was to water or ship
+     * @param x index from left (0) to right (9)
+     * @param y index from top (0) to bottom (9)
      * @return true if it was a hit false if you shot water
      */
-    void shootSend(int x, int y);
-
     bool shootCheck(int x, int y);
 
     /**
      * @brief getEnemyShot called with std::async
      * @return pair.first is x coordinate pair.second is y
      */
-    std::pair<int,int> getEnemyShot();
+    std::pair<int,int> getEnemyShot();//async
 
     /**
-     * @brief getEnemyShipLayout called only in beginning with std::async
+     * @brief getEnemyShipLayout called only in beginning
      * @return grid of ships layout
      */
-    Matrix getEnemyShipLayout();
+    Matrix getEnemyShipLayout();//async
 
     /**
-     * @brief getEnemyShipsWhithShots called during game whithout std::async
+     * @brief getEnemyShipsWhithShots called during game
      * @return grid of enemy ships with positions shot at
      */
     Matrix getEnemyShipsWhithShots();
 
     /**
-     * @brief getMyShips called without std::async
+     * @brief getMyShips
      * @return my layout
      */
     Matrix getMyShips();
 
     /**
-     * @brief connect initialize connetction to ip calld std::async
+     * @brief connect initialize connetction to ip
      * @param ip ip adress of enemy
      * @return true if connection was succesfull
      */
-    bool connect(std::string ip);
+    bool connect(std::string ip);//async
 
-    bool host();
+    /**
+     * @brief host
+     * @return true if connection succesful
+     */
+    bool host();//async
 
+    /**
+     * @brief resetSocket resets socket when host function needs to be cancelled
+     */
     void resetSocket();
 
+    /**
+     * @brief isIpValid
+     * @return true if ip parametr is valid IPv4 adress
+     */
     bool isIpValid(std::string ip);
 
+    /**
+     * @brief checkIfGameEnds
+     * @return what state is game in (who won/lost or game should continue)
+     */
     GameEnd checkIfGameEnds();
 
     /**
@@ -116,10 +133,21 @@ public:
      */
     Matrix getClickableMatrix(int x, int y);
 
+    /**
+     * @brief getClickableMatrix
+     * @return layout of all places that ship can be placed
+     */
     Matrix getClickableMatrix();
 
+    /**
+     * @brief checkIfAllShipsPlaced
+     * @return true if all ships were placed
+     */
     bool checkIfAllShipsPlaced();
 
+    /**
+     * @brief resetLayout clears all placed ships from layout, counters reset
+     */
     void resetLayout();
 
 

@@ -29,6 +29,9 @@ inline std::ostream& operator<<(std::ostream & os, CellType & t)
   return os;
 }
 
+/**
+ * @brief The Matrix class holds ships layout and always copies it when created so GUI can work with it whithout mutex locking
+ */
 class Matrix{
     CellType** matrix;
 public:
