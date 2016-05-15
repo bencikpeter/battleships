@@ -147,6 +147,13 @@ void PlayScene::runScene(GameEngine *engine)
                     }
                 }
                 break;
+            case SDL_KEYUP:
+                if ( event.key.keysym.scancode == SDL_SCANCODE_ESCAPE ) {
+                    engine->logic.resetLayout();
+                    myGrid = engine->logic.getClickableMatrix();
+                    renderMyGrid( engine );
+                }
+                break;
             }
             if ( event.type == engine->logicEventType
                  && event.user.code == HOST ) {
