@@ -83,53 +83,93 @@ public:
      * @brief getEnemyShipLayout called only in beginning
      * @return grid of ships layout
      */
-    Matrix getEnemyShipLayout();//async
+    Matrix getEnemyShipLayout(){//async
+        decodeEnemyLayout(net->listener());
+        std::lock_guard<std::mutex> guard(mutexEnemy);
+        auto e = LogicEvent(GET_LAYOUT);
+        return Matrix(enemyShips);
+    }
 
     /**
      * @brief getEnemyShipsWhithShots called during game
      * @return grid of enemy ships with positions shot at
      */
-    Matrix getEnemyShipsWhithShots();
+    Matrix getEnemyShipsWhithShots(){
+        std::lock_guard<std::mutex> guard(mutexEnemy);
+        return Matrix(enemyShips);
+    }
 
     /**
      * @brief getMyShips
      * @return my layout
      */
-    Matrix getMyShips();
+    Matrix getMyShips(){
+        std::lock_guard<std::mutex> guard(mutexMy);
+        return Matrix(myShips);
+    }
 
     /**
      * @brief connect initialize connetction to ip
      * @param ip ip adress of enemy
      * @return true if connection was succesfull
      */
-    bool connect(std::string ip);//async
+    bool connect(std::string ip){//async
+        net = new network::NetworkManager(ip);
+        auto e = LogicEvent(CONNECT);
+        return net->initialize();
+    }
 
     /**
      * @brief host
      * @return true if connection succesful
      */
-    bool host();//async
+    bool host(){//async
+        net = new network::NetworkManager();
+        auto e = LogicEvent(HOST);
+        bool tmp = net->waitForIinit();
+        return tmp;
+    }
 
     /**
      * @brief resetSocket resets socket when host function needs to be cancelled
      */
-    void resetSocket();
+    void resetSocket()
+    {
+        try{
+            net->socketReset();
+        } catch(std::exception ex) {
+            std::cout << "thrown exception" << ex.what() << std::endl;
+        }
+    }
 
     /**
      * @brief isIpValid
      * @return true if ip parametr is valid IPv4 adress
      */
-    bool isIpValid(std::string ip);
+    bool isIpValid(std::string ip){
+        asio::error_code ec;
+        asio::ip::address::from_string(ip, ec);
+        if (ec){
+            return false;
+        }
+        return true;
+    }
 
     /**
      * @brief checkIfGameEnds
      * @return what state is game in (who won/lost or game should continue)
      */
-    GameEnd checkIfGameEnds();
+    GameEnd checkIfGameEnds(){
+        std::lock_guard<std::mutex> guard1(mutexMy);
+        std::lock_guard<std::mutex> guard2(mutexEnemy);
+        if (countMy == 0) return LOST;
+        if (countEnemy == 0) return WON;
+        return PLAY;
+    }
 
     /**
      * @brief getClickableMatrix when user clicks on water creates array (does not modify myShips) where he can click next (other end of ship)
-     * @return logic::Matrix copy
+     * @return Matrix copy
      */
     Matrix getClickableMatrix(int x, int y);
 
@@ -143,7 +183,10 @@ public:
      * @brief checkIfAllShipsPlaced
      * @return true if all ships were placed
      */
-    bool checkIfAllShipsPlaced();
+    bool checkIfAllShipsPlaced()
+    {
+        return (count2 == 0) && (count3 == 0) && (count4 == 0) && (count6 == 0);
+    }
 
     /**
      * @brief resetLayout clears all placed ships from layout, counters reset
@@ -152,13 +195,30 @@ public:
 
 
 private:
-    std::vector<char> encodeCoords(int x, int y);
+    std::vector<char> encodeCoords(int x, int y){
+        std::vector<char> vec;
+        vec.push_back(x);
+        vec.push_back(y);
+        return vec;
+    }
 
     std::vector<char> encodeMyLayout();
 
-    std::pair<int,int> decodePair(const std::vector<char> &vec);
+    std::pair<int, int> decodePair(const std::vector<char> &vec){
+        std::pair<int,int> pair;
+        pair.first = vec[0];
+        pair.second = vec[1];
+        return pair;
+    }
 
-    void decodeEnemyLayout(const std::vector<char> &vec);
+    void decodeEnemyLayout(const std::vector<char> &vec){
+        std::lock_guard<std::mutex> guard(mutexEnemy);
+        for(int i = 0; i < 10; i++){
+            for(int j = 0; j < 10; j++){
+                enemyShips[i][j] = static_cast<CellType>(vec[i*10+j]);
+            }
+        }
+    }
 
     bool checkWaterAroundCell(int x, int y);
 };
