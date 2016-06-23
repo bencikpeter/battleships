@@ -14,17 +14,32 @@ private:
     void renderTitle(GameEngine *engine);
 
 protected:
-    WonScene();
+    WonScene()
+    {
+
+    }
 
     // GameScene interface
 public:
     void init(GameEngine *engine) override;
-    void clean() override;
-    void pause() override;
-    void resume(GameEngine *) override;
+    void clean() override
+    {
+        delete title;
+    }
+    void pause() override
+    {
+
+    }
+    void resume(GameEngine *) override
+    {
+
+    }
     void runScene(GameEngine *engine) override;
 
-    static WonScene* Instance();
+    static WonScene* Instance()
+    {
+        return &wonScene;
+    }
 };
 
 #endif // WONSCENE_H

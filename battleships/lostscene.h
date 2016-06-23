@@ -14,17 +14,26 @@ private:
     void renderTitle(GameEngine *engine);
 
 protected:
-    LostScene();
+    LostScene() {}
 
     // GameScene interface
 public:
     void init(GameEngine *engine) override;
-    void clean() override;
-    void pause() override;
-    void resume(GameEngine *) override;
+    void clean() override
+    {
+        delete title;
+    }
+    void pause() override {}
+    void resume(GameEngine *) override
+    {
+
+    }
     void runScene(GameEngine *engine) override;
 
-    static LostScene* Instance();
+    static LostScene* Instance()
+    {
+        return &lostScene;
+    }
 };
 
 #endif // LOSTSCENE_H

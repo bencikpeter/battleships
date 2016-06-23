@@ -20,17 +20,32 @@ private:
 
 
 protected:
-    ConnectScene();
+    ConnectScene()
+    {
+
+    }
 
     // GameScene interface
 public:
-    void pause() override;
-    void resume(GameEngine *) override;
+    void pause() override
+    {
+        SDL_StopTextInput();
+    }
+    void resume(GameEngine *) override
+    {
+        SDL_StartTextInput();
+    }
     void runScene(GameEngine *engine) override;
     void init(GameEngine *engine) override;
-    void clean() override;
+    void clean() override
+    {
+        SDL_StopTextInput();
+    }
 
-    static ConnectScene* Instance();
+    static ConnectScene* Instance()
+    {
+        return &connectScene;
+    }
 };
 
 #endif // CONNECTSCENE_H

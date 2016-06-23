@@ -7,9 +7,9 @@ class GameScene
 {
 
 protected:
-    GameScene();
+    GameScene() {}
 
-    virtual ~GameScene();
+    virtual ~GameScene() {}
 public:
     virtual void init( GameEngine *engine ) = 0;
 
@@ -21,7 +21,10 @@ public:
 
     virtual void runScene( GameEngine *engine ) = 0;
 
-    void changeState( GameEngine *engine, GameScene *scene );
+    void changeState( GameEngine *engine, GameScene *scene )
+    {
+        engine->changeScene( scene );
+    }
 
     GameScene( GameScene& other) = delete;
 

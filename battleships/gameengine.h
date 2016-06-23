@@ -19,7 +19,16 @@ class GameEngine
 public:
     GameEngine(const char *title, int width, int height);
 
-    ~GameEngine();
+    GameEngine(const GameEngine &) = delete;
+
+    GameEngine& operator=(const GameEngine &) = delete;
+
+    ~GameEngine() {
+        TTF_CloseFont ( font );
+        renderer.close();
+        SDL_DestroyWindow( window );
+        SDL_Quit();
+    }
 
     /**
      * @brief changeScene changes the scene on the top of the stack
@@ -46,7 +55,10 @@ public:
     /**
      * @brief quit prevent game loop from another iteration
      */
-    void quit();
+    void quit()
+    {
+        running = false;
+    }
 
     /**
      * @brief renderer renders scene to the monitor
@@ -62,13 +74,25 @@ public:
      * @brief getLogicEventType
      * @return type of event caused by logic
      */
-    Uint32 getLogicEventType() const;
+    Uint32 getLogicEventType() const
+    {
+        return logicEventType;
+    }
 
-    void reset();
+    void reset()
+    {
+        logic = logic::Logic();
+    }
 
-    int scenesNumber();
+    int scenesNumber()
+    {
+        return scenes.size();
+    }
 
-    bool isRunning() const;
+    bool isRunning() const
+    {
+        return running;
+    }
 
     TTF_Font *font;
 

@@ -13,11 +13,6 @@ void WonScene::renderTitle(GameEngine *engine)
     engine->renderer.render();
 }
 
-WonScene::WonScene()
-{
-
-}
-
 void WonScene::init(GameEngine *engine)
 {
     title = new MenuItem( "YOU WON !!!", engine->font );
@@ -26,21 +21,6 @@ void WonScene::init(GameEngine *engine)
     SDL_FreeSurface( lost );
     title->computeDimmensions();
     renderTitle( engine );
-}
-
-void WonScene::clean()
-{
-    delete title;
-}
-
-void WonScene::pause()
-{
-
-}
-
-void WonScene::resume(GameEngine *)
-{
-
 }
 
 void WonScene::runScene(GameEngine *engine)
@@ -62,7 +42,4 @@ void WonScene::runScene(GameEngine *engine)
     }
 }
 
-WonScene *WonScene::Instance()
-{
-    return &wonScene;
-}
+

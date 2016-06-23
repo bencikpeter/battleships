@@ -51,29 +51,6 @@ void PlayScene::renderEnemyGrid(GameEngine *engine) {
     engine->renderer.render();
 }
 
-std::pair<int, int> PlayScene::getMousePos()
-{
-    int x;
-    int y;
-    std::pair< int, int > coordinates;
-    SDL_GetMouseState( &x, &y );
-    coordinates.first = x / cellWidth;
-    coordinates.second = y / cellHeight;
-    return coordinates;
-}
-
-void PlayScene::renderCell( GameEngine *engine, SDL_Rect *rect, int r, int g, int b )
-{
-    engine->renderer.setRenderColor( r, g, b, 255 );
-    SDL_RenderFillRect( engine->renderer.renderer, rect );
-    engine->renderer.setRenderColor( 0, 0, 0, 255 );
-    SDL_RenderDrawRect( engine->renderer.renderer, rect );
-}
-
-PlayScene::PlayScene()
-{
-
-}
 
 void PlayScene::init(GameEngine *engine)
 {
@@ -93,21 +70,6 @@ void PlayScene::init(GameEngine *engine)
     cellHeight = height / 10;
     myGrid = engine->logic.getClickableMatrix();
     renderMyGrid( engine );
-}
-
-void PlayScene::clean()
-{
-
-}
-
-void PlayScene::pause()
-{
-
-}
-
-void PlayScene::resume(GameEngine *)
-{
-
 }
 
 void PlayScene::runScene(GameEngine *engine)
@@ -274,7 +236,4 @@ void PlayScene::runScene(GameEngine *engine)
     }
 }
 
-PlayScene *PlayScene::Instance()
-{
-    return &playScene;
-}
+

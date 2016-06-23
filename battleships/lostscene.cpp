@@ -13,10 +13,7 @@ void LostScene::renderTitle(GameEngine *engine)
     engine->renderer.render();
 }
 
-LostScene::LostScene()
-{
 
-}
 
 void LostScene::init(GameEngine *engine)
 {
@@ -26,21 +23,6 @@ void LostScene::init(GameEngine *engine)
     SDL_FreeSurface( lost );
     title->computeDimmensions();
     renderTitle( engine );
-}
-
-void LostScene::clean()
-{
-    delete title;
-}
-
-void LostScene::pause()
-{
-
-}
-
-void LostScene::resume(GameEngine *)
-{
-
 }
 
 void LostScene::runScene(GameEngine *engine)
@@ -60,9 +42,4 @@ void LostScene::runScene(GameEngine *engine)
             break;
         }
     }
-}
-
-LostScene *LostScene::Instance()
-{
-    return &lostScene;
 }

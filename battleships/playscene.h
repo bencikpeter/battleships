@@ -31,21 +31,51 @@ private:
 
     void renderMyGrid(GameEngine *engine);
     void renderEnemyGrid(GameEngine *engine);
-    std::pair< int, int > getMousePos();
-    void renderCell(GameEngine *engine, SDL_Rect *rect , int r, int g, int b);
+    std::pair< int, int > getMousePos()
+    {
+        int x;
+        int y;
+        std::pair< int, int > coordinates;
+        SDL_GetMouseState( &x, &y );
+        coordinates.first = x / cellWidth;
+        coordinates.second = y / cellHeight;
+        return coordinates;
+    }
+    void renderCell(GameEngine *engine, SDL_Rect *rect , int r, int g, int b)
+    {
+        engine->renderer.setRenderColor( r, g, b, 255 );
+        SDL_RenderFillRect( engine->renderer.renderer, rect );
+        engine->renderer.setRenderColor( 0, 0, 0, 255 );
+        SDL_RenderDrawRect( engine->renderer.renderer, rect );
+    }
 
 protected:
-    PlayScene();
+    PlayScene()
+    {
+
+    }
 
     // GameScene interface
 public:
     void init(GameEngine *engine) override;
-    void clean() override;
-    void pause() override;
-    void resume(GameEngine *) override;
+    void clean() override
+    {
+
+    }
+    void pause() override
+    {
+
+    }
+    void resume(GameEngine *) override
+    {
+
+    }
     void runScene(GameEngine *engine) override;
 
-    static PlayScene* Instance();
+    static PlayScene* Instance()
+    {
+        return &playScene;
+    }
 };
 
 #endif // PLAYSCENE_H

@@ -51,13 +51,6 @@ GameEngine::GameEngine( const char* title, int width, int height )
     running = true;
 }
 
-GameEngine::~GameEngine() {
-    TTF_CloseFont ( font );
-    renderer.close();
-    SDL_DestroyWindow( window );
-    SDL_Quit();
-}
-
 void GameEngine::changeScene(GameScene *scene) {
     if ( !scenes.empty() ) {
         scenes.top()->clean();
@@ -88,29 +81,4 @@ void GameEngine::popScene() {
 
 void GameEngine::runScene() {
     scenes.top()->runScene( this );
-}
-
-void GameEngine::quit()
-{
-    running = false;
-}
-
-Uint32 GameEngine::getLogicEventType() const
-{
-    return logicEventType;
-}
-
-void GameEngine::reset()
-{
-    logic = logic::Logic();
-}
-
-int GameEngine::scenesNumber()
-{
-    return scenes.size();
-}
-
-bool GameEngine::isRunning() const
-{
-    return running;
 }

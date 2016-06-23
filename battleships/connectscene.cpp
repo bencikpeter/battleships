@@ -53,21 +53,6 @@ void ConnectScene::renderText(GameEngine *engine)
     text.computeDimmensions();
 }
 
-ConnectScene::ConnectScene()
-{
-
-}
-
-void ConnectScene::pause()
-{
-    SDL_StopTextInput();
-}
-
-void ConnectScene::resume(GameEngine *)
-{
-    SDL_StartTextInput();
-}
-
 void ConnectScene::runScene(GameEngine *engine)
 {
     std::string &inputText = menu[1].text;
@@ -114,11 +99,6 @@ void ConnectScene::runScene(GameEngine *engine)
     }
 }
 
-ConnectScene *ConnectScene::Instance()
-{
-    return &connectScene;
-}
-
 void ConnectScene::init(GameEngine *engine)
 {
     SDL_StartTextInput();
@@ -151,9 +131,4 @@ void ConnectScene::init(GameEngine *engine)
     }
 
     renderConnectScene( engine );
-}
-
-void ConnectScene::clean()
-{
-    SDL_StopTextInput();
 }

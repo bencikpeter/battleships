@@ -17,17 +17,35 @@ private:
 friend GameEngine;
 
 protected:
-    MenuScene();
+MenuScene()
+{
+
+}
 
 public:
     // GameScene interface
-    void pause() override;
-    void resume(GameEngine *engine) override;
+void pause() override
+{
+
+}
+void resume(GameEngine *engine) override
+{
+    renderMenu( engine );
+}
     void runScene(GameEngine *engine) override;
-    void clean() override;
+    void clean() override
+    {
+        for ( MenuItem &item : menu ) {
+            SDL_DestroyTexture( item.selected );
+            SDL_DestroyTexture( item.notSelected );
+        }
+    }
     void init(GameEngine *engine) override;
 
-    static MenuScene* Instance();
+    static MenuScene* Instance()
+    {
+        return &menuScene;
+    }
 };
 
 #endif // MENUSCENE_H

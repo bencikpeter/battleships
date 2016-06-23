@@ -31,10 +31,7 @@ void HostScene::renderHostScene(GameEngine *engine)
     engine->renderer.render();
 }
 
-HostScene::HostScene()
-{
 
-}
 
 void HostScene::init(GameEngine *engine)
 {
@@ -78,26 +75,6 @@ void HostScene::init(GameEngine *engine)
     renderHostScene( engine );
 }
 
-void HostScene::clean()
-{
-    MenuItem &waiting = menu[0];
-    MenuItem &back = menu[1];
-
-    SDL_DestroyTexture( waiting.notSelected );
-    SDL_DestroyTexture( back.notSelected );
-    SDL_DestroyTexture( back.selected );
-}
-
-void HostScene::pause()
-{
-
-}
-
-void HostScene::resume(GameEngine *)
-{
-
-}
-
 void HostScene::runScene(GameEngine *engine)
 {
     if( SDL_WaitEvent( &event ) ) {
@@ -125,7 +102,4 @@ void HostScene::runScene(GameEngine *engine)
     }
 }
 
-HostScene *HostScene::Instance()
-{
-    return &hostScene;
-}
+

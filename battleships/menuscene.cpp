@@ -23,21 +23,6 @@ void MenuScene::renderMenu(GameEngine *engine) {
     engine->renderer.render();
 }
 
-MenuScene::MenuScene()
-{
-
-}
-
-void MenuScene::pause()
-{
-
-}
-
-void MenuScene::resume(GameEngine *engine)
-{
-    renderMenu( engine );
-}
-
 void MenuScene::runScene(GameEngine *engine)
 {
     if ( SDL_WaitEvent( &event ) ) {
@@ -65,11 +50,6 @@ void MenuScene::runScene(GameEngine *engine)
     }
 }
 
-MenuScene *MenuScene::Instance()
-{
-    return &menuScene;
-}
-
 void MenuScene::init(GameEngine *engine)
 {
     menu.push_back( MenuItem( "Host", engine->font ) );
@@ -87,10 +67,4 @@ void MenuScene::init(GameEngine *engine)
     renderMenu( engine );
 }
 
-void MenuScene::clean()
-{
-    for ( MenuItem &item : menu ) {
-        SDL_DestroyTexture( item.selected );
-        SDL_DestroyTexture( item.notSelected );
-    }
-}
+
