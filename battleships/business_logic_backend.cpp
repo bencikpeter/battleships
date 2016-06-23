@@ -21,15 +21,16 @@ count2(other.count2), count3(other.count3), count4(other.count4), count6(other.c
 
 logic::Logic &logic::Logic::operator=(logic::Logic && other)
 {
-    std::swap(myShips,other.myShips);
-    std::swap(enemyShips,other.enemyShips);
-    std::swap(countMy,other.countMy);
-    std::swap(countEnemy,other.countEnemy);
-    std::swap(net,other.net);
-    std::swap(count2,other.count2);
-    std::swap(count3,other.count3);
-    std::swap(count4,other.count4);
-    std::swap(count6,other.count6);
+    using std::swap;
+    swap(myShips,other.myShips);
+    swap(enemyShips,other.enemyShips);
+    swap(countMy,other.countMy);
+    swap(countEnemy,other.countEnemy);
+    swap(net,other.net);
+    swap(count2,other.count2);
+    swap(count3,other.count3);
+    swap(count4,other.count4);
+    swap(count6,other.count6);
     return *this;
 }
 
@@ -186,62 +187,6 @@ std::pair<int, int> logic::Logic::getEnemyShot(){
     return a;
 }
 
-logic::Matrix logic::Logic::getEnemyShipLayout(){
-    decodeEnemyLayout(net->listener());
-    std::lock_guard<std::mutex> guard(mutexEnemy);
-    auto e = LogicEvent(GET_LAYOUT);
-    return Matrix(enemyShips);
-}
-
-logic::Matrix logic::Logic::getEnemyShipsWhithShots(){
-    std::lock_guard<std::mutex> guard(mutexEnemy);
-    return Matrix(enemyShips);
-}
-
-logic::Matrix logic::Logic::getMyShips(){
-    std::lock_guard<std::mutex> guard(mutexMy);
-    return Matrix(myShips);
-}
-
-bool logic::Logic::connect(std::string ip){
-    net = new network::NetworkManager(ip);
-    auto e = LogicEvent(CONNECT);
-    return net->initialize();
-}
-
-bool logic::Logic::host(){
-    net = new network::NetworkManager();
-    auto e = LogicEvent(HOST);
-    bool tmp = net->waitForIinit();
-    return tmp;
-}
-
-void logic::Logic::resetSocket()
-{
-    try{
-        net->socketReset();
-    } catch(std::exception ex) {
-        std::cout << "thrown exception" << ex.what() << std::endl;
-    }
-}
-
-bool logic::Logic::isIpValid(std::string ip){
-    asio::error_code ec;
-    asio::ip::address::from_string(ip, ec);
-    if (ec){
-        return false;
-    }
-    return true;
-}
-
-logic::GameEnd logic::Logic::checkIfGameEnds(){
-    std::lock_guard<std::mutex> guard1(mutexMy);
-    std::lock_guard<std::mutex> guard2(mutexEnemy);
-    if (countMy == 0) return LOST;
-    if (countEnemy == 0) return WON;
-    return PLAY;
-}
-
 logic::Matrix logic::Logic::getClickableMatrix(int x, int y){
     std::lock_guard<std::mutex> guard(mutexMy);
     auto m = Matrix(myShips);
@@ -301,19 +246,15 @@ logic::Matrix logic::Logic::getClickableMatrix()
     return m;
 }
 
-bool logic::Logic::checkIfAllShipsPlaced()
-{
-    return (count2 == 0) && (count3 == 0) && (count4 == 0) && (count6 == 0);
-}
-
 void logic::Logic::resetLayout()
 {
-    std::lock_guard<std::mutex> guard1(mutexInsert);
-    count2 = 4;
-    count3 = 3;
-    count4 = 2;
-    count6 = 1;
-    guard1.~lock_guard();
+    {
+        std::lock_guard<std::mutex> guard1(mutexInsert);
+        count2 = 4;
+        count3 = 3;
+        count4 = 2;
+        count6 = 1;
+    }
     std::lock_guard<std::mutex> guard2(mutexMy);
     for (int i = 0; i < 10; i++){
         for (int j = 0; j < 10; j++){
@@ -322,12 +263,6 @@ void logic::Logic::resetLayout()
     }
 }
 
-std::vector<char> logic::Logic::encodeCoords(int x, int y){
-    std::vector<char> vec;
-    vec.push_back(static_cast<char>(x));
-    vec.push_back(static_cast<char>(y));
-    return vec;
-}
 
 std::vector<char> logic::Logic::encodeMyLayout(){
     std::vector<char> vec;
@@ -335,26 +270,10 @@ std::vector<char> logic::Logic::encodeMyLayout(){
     std::lock_guard<std::mutex> guard1(mutexMy);
     for(int i = 0; i < 10; i++){
         for(int j = 0; j < 10; j++){
-            vec[i*10+j] = static_cast<char>(myShips[i][j]);
+            vec[i*10+j] = myShips[i][j];
         }
     }
     return vec;
-}
-
-std::pair<int, int> logic::Logic::decodePair(const std::vector<char> &vec){
-    std::pair<int,int> pair;
-    pair.first = static_cast<int>(vec[0]);
-    pair.second = static_cast<int>(vec[1]);
-    return pair;
-}
-
-void logic::Logic::decodeEnemyLayout(const std::vector<char> &vec){
-    std::lock_guard<std::mutex> guard(mutexEnemy);
-    for(int i = 0; i < 10; i++){
-        for(int j = 0; j < 10; j++){
-            enemyShips[i][j] = static_cast<CellType>(vec[i*10+j]);
-        }
-    }
 }
 
 bool logic::Logic::checkWaterAroundCell(int x, int y){
