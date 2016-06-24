@@ -16,7 +16,7 @@ sudo apt-get install libsdl2-ttf-dev
 
 3.
 
-run Makefile in <your_path>/battleships/debug
+run Makefile in {your_path}/battleships/debug
 
 
 PS: The Makefile uses standard c++14 and clang++. To change the compiler, 
