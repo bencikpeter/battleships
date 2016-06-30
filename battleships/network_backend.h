@@ -65,6 +65,10 @@ namespace network {
          */
         NetworkManager(): io_service(), socket(new ip::udp::socket(io_service,ip::udp::endpoint(ip::udp::v4(), 1337))), send_endpoint(ip::udp::v4(), 1337) { }
         
+        NetworkManager (const NetworkManager& other) = delete;
+        
+        NetworkManager& operator=(const NetworkManager& other) = delete;
+        
         ~NetworkManager(){
             socket->close();
         }
