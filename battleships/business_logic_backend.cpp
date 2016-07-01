@@ -14,7 +14,7 @@ logic::Logic::~Logic(){
 }
 
 logic::Logic::Logic(logic::Logic && other) : myShips(other.myShips), enemyShips(other.enemyShips), countMy(other.countMy), countEnemy(other.countEnemy), net(other.net),
-count2(other.count2), count3(other.count3), count4(other.count4), count6(other.count6) {
+    count2(other.count2), count3(other.count3), count4(other.count4), count6(other.count6) {
     other.myShips = nullptr;
     other.enemyShips = nullptr;
 }
@@ -35,7 +35,7 @@ logic::Logic &logic::Logic::operator=(logic::Logic && other)
 }
 
 logic::Logic::Logic(): myShips(new CellType*[10]), enemyShips(new CellType*[10]), countMy(31), countEnemy(31), net(nullptr),
-                       count2(4), count3(3), count4(2), count6(1){
+    count2(4), count3(3), count4(2), count6(1){
     std::lock_guard<std::mutex> guard1(mutexMy);
     std::lock_guard<std::mutex> guard2(mutexEnemy);
     for (int i = 0; i < 10; i++){
@@ -139,13 +139,14 @@ bool logic::Logic::insertShip(int x1, int y1, int x2, int y2){
 }
 
 void logic::Logic::sendMyLayout(){
-    std::lock_guard<std::mutex> guard(mutexMy);
-    for (int i = 0; i < 10; i++){
-        for (int j = 0; j < 10; j++){
-            if (myShips[i][j] == CLICKABLE || myShips[i][j] == NOT_CLICKABLE) myShips[i][j] = WATER_NOT_SHOT;
+    {
+        std::lock_guard<std::mutex> guard(mutexMy);
+        for (int i = 0; i < 10; i++){
+            for (int j = 0; j < 10; j++){
+                if (myShips[i][j] == CLICKABLE || myShips[i][j] == NOT_CLICKABLE) myShips[i][j] = WATER_NOT_SHOT;
+            }
         }
     }
-    guard.~lock_guard();
     auto a = encodeMyLayout();
     while (!net->sender(a));
     auto e = LogicEvent(SEND_LAYOUT);
@@ -188,9 +189,11 @@ std::pair<int, int> logic::Logic::getEnemyShot(){
 }
 
 logic::Matrix logic::Logic::getClickableMatrix(int x, int y){
-    std::lock_guard<std::mutex> guard(mutexMy);
-    auto m = Matrix(myShips);
-    guard.~lock_guard();
+    Matrix m;
+    {
+        std::lock_guard<std::mutex> guard(mutexMy);
+        m = Matrix(myShips);
+    }
     auto ships = m.get();
     bool a[4];
     for (int i = 0; i < 4; i++)
@@ -199,11 +202,11 @@ logic::Matrix logic::Logic::getClickableMatrix(int x, int y){
     std::lock_guard<std::mutex> guard2(mutexInsert);
     for (int i = 1; i < 6; i++){
         switch(i){
-                case 5: pointer = &count6; break;
-                case 3: pointer = &count4; break;
-                case 2: pointer = &count3; break;
-                case 1: pointer = &count2; break;
-                }
+        case 5: pointer = &count6; break;
+        case 3: pointer = &count4; break;
+        case 2: pointer = &count3; break;
+        case 1: pointer = &count2; break;
+        }
         //right
         if (x+i < 10 && ships[x+i][y] != WATER_NOT_SHOT)
             a[0] = false;
@@ -226,7 +229,7 @@ logic::Matrix logic::Logic::getClickableMatrix(int x, int y){
     for (int i = 0; i < 10; i++){
         for (int j = 0; j < 10; j++){
             if (ships[i][j] == WATER_NOT_SHOT)
-            ships[i][j] = NOT_CLICKABLE;
+                ships[i][j] = NOT_CLICKABLE;
         }
     }
     return m;
@@ -234,13 +237,15 @@ logic::Matrix logic::Logic::getClickableMatrix(int x, int y){
 
 logic::Matrix logic::Logic::getClickableMatrix()
 {
-    std::lock_guard<std::mutex> guard(mutexMy);
-    auto m = Matrix(myShips);
-    guard.~lock_guard();
+    Matrix m;
+    {
+        std::lock_guard<std::mutex> guard(mutexMy);
+        m = Matrix(myShips);
+    }
     for (int i = 0; i < 10; i++){
         for (int j = 0; j < 10; j++){
             if (m.get()[i][j] == WATER_NOT_SHOT)
-            m.get()[i][j] = CLICKABLE;
+                m.get()[i][j] = CLICKABLE;
         }
     }
     return m;
