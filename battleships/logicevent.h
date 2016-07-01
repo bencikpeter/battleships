@@ -15,7 +15,7 @@ public:
 
     LogicEvent( const LogicEvent& ) = default;
 
-    LogicEvent& operator=( const LogicEvent& ) = delete;
+    LogicEvent& operator=( const LogicEvent& ) = default;
 
     ~LogicEvent();
 
