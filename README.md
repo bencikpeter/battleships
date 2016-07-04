@@ -14,6 +14,8 @@ sudo apt-get install libsdl2-dev
 
 sudo apt-get install libsdl2-ttf-dev
 
+you will also need qmake, so the easiest way to get it is install Qt directly from https://www.qt.io
+
 3
 
 run Makefile in {your_path}/battleships/debug
