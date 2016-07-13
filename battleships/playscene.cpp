@@ -4,7 +4,7 @@
 
 PlayScene PlayScene::playScene;
 
-void PlayScene::renderMyGrid(GameEngine *engine)
+void PlayScene::renderMyGrid(GameEngine &engine)
 {
     for (int i = 0; i < 10; ++i ){
         for ( int j = 0; j < 10; ++j ) {
@@ -28,10 +28,10 @@ void PlayScene::renderMyGrid(GameEngine *engine)
             }
         }
     }
-    engine->renderer.render();
+    engine.renderer.render();
 }
 
-void PlayScene::renderEnemyGrid(GameEngine *engine) {
+void PlayScene::renderEnemyGrid(GameEngine &engine) {
     for (int i = 0; i < 10; ++i ){
         for ( int j = 0; j < 10; ++j ) {
             SDL_Rect rect;
@@ -48,11 +48,11 @@ void PlayScene::renderEnemyGrid(GameEngine *engine) {
             }
         }
     }
-    engine->renderer.render();
+    engine.renderer.render();
 }
 
 
-void PlayScene::init(GameEngine *engine)
+void PlayScene::init(GameEngine &engine)
 {
     phase = 0;
     clicked = false;
@@ -65,45 +65,45 @@ void PlayScene::init(GameEngine *engine)
     getShot = false;
     int width;
     int height;
-    SDL_GetRendererOutputSize( engine->renderer.renderer, &width, &height );
+    SDL_GetRendererOutputSize( engine.renderer.renderer, &width, &height );
     cellWidth = width / 10;
     cellHeight = height / 10;
-    myGrid = engine->logic.getClickableMatrix();
+    myGrid = engine.logic.getClickableMatrix();
     renderMyGrid( engine );
 }
 
-void PlayScene::runScene(GameEngine *engine)
+void PlayScene::runScene(GameEngine &engine)
 {
     if ( phase == 0 ) {
         if ( SDL_WaitEvent( &event ) ) {
             switch ( event.type ) {
             case SDL_QUIT:
-                engine->quit();
+                engine.quit();
                 break;
             case SDL_MOUSEBUTTONDOWN:
                 if ( !shipsPlaced ) {
                     if ( !clicked ) {
                         shipBegin = getMousePos();
                         if ( myGrid.get()[ shipBegin.first ][ shipBegin.second ] == logic::CLICKABLE ) {
-                            myGrid = engine->logic.getClickableMatrix( shipBegin.first, shipBegin.second );
+                            myGrid = engine.logic.getClickableMatrix( shipBegin.first, shipBegin.second );
                             renderMyGrid( engine );
                             clicked = true;
                         }
                     } else if ( clicked ) {
                         shipEnd = getMousePos();
                         if ( myGrid.get()[ shipEnd.first ][ shipEnd.second ] == logic::CLICKABLE ) {
-                            engine->logic.insertShip( shipBegin.first,
+                            engine.logic.insertShip( shipBegin.first,
                                                       shipBegin.second,
                                                       shipEnd.first,
                                                       shipEnd.second );
                             clicked = false;
-                            myGrid = engine->logic.getClickableMatrix();
-                            shipsPlaced = engine->logic.checkIfAllShipsPlaced();
+                            myGrid = engine.logic.getClickableMatrix();
+                            shipsPlaced = engine.logic.checkIfAllShipsPlaced();
                             ready = shipsPlaced;
                             renderMyGrid( engine );
                         } else if ( myGrid.get()[ shipEnd.first ][ shipEnd.second ] == logic::NOT_CLICKABLE ) {
                             clicked = false;
-                            myGrid = engine->logic.getClickableMatrix();
+                            myGrid = engine.logic.getClickableMatrix();
                             renderMyGrid( engine );
                         }
                     }
@@ -111,46 +111,46 @@ void PlayScene::runScene(GameEngine *engine)
                 break;
             case SDL_KEYUP:
                 if ( event.key.keysym.scancode == SDL_SCANCODE_ESCAPE ) {
-                    engine->logic.resetLayout();
-                    myGrid = engine->logic.getClickableMatrix();
+                    engine.logic.resetLayout();
+                    myGrid = engine.logic.getClickableMatrix();
                     renderMyGrid( engine );
                 }
                 break;
             }
-            if ( event.type == engine->logicEventType
+            if ( event.type == engine.logicEventType
                  && event.user.code == HOST ) {
                 enemyLayout = std::async( std::launch::async,
                                           &logic::Logic::getEnemyShipLayout,
-                                          &engine->logic );
+                                          &engine.logic );
                 host = true;
-            } else if ( event.type == engine->logicEventType
+            } else if ( event.type == engine.logicEventType
                         && event.user.code == CONNECT ) {
                 host = false;
-            } else if ( event.type == engine->logicEventType
+            } else if ( event.type == engine.logicEventType
                         && event.user.code == GET_LAYOUT ) {
                 enemyGrid = enemyLayout.get();
                 layoutReceived = true;
-            } else if ( event.type == engine->logicEventType
+            } else if ( event.type == engine.logicEventType
                         && event.user.code == SEND_LAYOUT ) {
                 layoutSent = true;
-                myGrid = engine->logic.getMyShips();
+                myGrid = engine.logic.getMyShips();
             }
             if ( ready && host && layoutReceived ) {
                 temp = std::async( std::launch::async,
                                    &logic::Logic::sendMyLayout,
-                                   &engine->logic );
+                                   &engine.logic );
                 ready = false; // so this branch would not be entered twice
             }
             if ( !host && ready ) {
                 temp = std::async( std::launch::async,
                                    &logic::Logic::sendMyLayout,
-                                   &engine->logic );
+                                   &engine.logic );
                 ready = false; // so this branch would not be entered twice
             }
             if ( !host && layoutSent && !layoutReceived && !getLayout) {
                 enemyLayout = std::async( std::launch::async,
                                           &logic::Logic::getEnemyShipLayout,
-                                          &engine->logic );
+                                          &engine.logic );
                 getLayout = true;
             }
             if ( layoutReceived && layoutSent && host ) {
@@ -162,21 +162,21 @@ void PlayScene::runScene(GameEngine *engine)
             }
         }
     } else if ( phase == 1 ) {
-        if ( engine->logic.checkIfGameEnds() == logic::WON ) {
-            engine->pushScene( WonScene::Instance() );
-        } else if ( engine->logic.checkIfGameEnds() == logic::LOST ) {
-            engine->pushScene( LostScene::Instance() );
+        if ( engine.logic.checkIfGameEnds() == logic::WON ) {
+            engine.pushScene( WonScene::Instance() );
+        } else if ( engine.logic.checkIfGameEnds() == logic::LOST ) {
+            engine.pushScene( LostScene::Instance() );
         }
         if ( SDL_WaitEvent( &event ) ) {
             switch ( event.type ) {
             case SDL_QUIT:
-                engine->quit();
+                engine.quit();
                 break;
             case SDL_MOUSEBUTTONDOWN:
                 mouseCoord = getMousePos();
                 if ( enemyGrid.get()[ mouseCoord.first ][ mouseCoord.second ] != logic::SHIP_SHOT
                      && enemyGrid.get()[ mouseCoord.first ][ mouseCoord.second ] != logic::WATER_SHOT ) {
-                    if ( engine->logic.shootCheck( mouseCoord.first, mouseCoord.second ) ) {
+                    if ( engine.logic.shootCheck( mouseCoord.first, mouseCoord.second ) ) {
                         enemyGrid.get()[ mouseCoord.first ][ mouseCoord.second ] = logic::SHIP_SHOT;
                         renderEnemyGrid( engine );
                     } else {
@@ -186,7 +186,7 @@ void PlayScene::runScene(GameEngine *engine)
                     }
                     temp = std::async( std::launch::async,
                                        &logic::Logic::shootSend,
-                                       &engine->logic,
+                                       &engine.logic,
                                        mouseCoord.first,
                                        mouseCoord.second );
                 }
@@ -199,16 +199,16 @@ void PlayScene::runScene(GameEngine *engine)
         if ( !getShot ) {
             enemyShot =  std::async( std::launch::async,
                                      &logic::Logic::getEnemyShot,
-                                     &engine->logic );
+                                     &engine.logic );
             getShot = true;
         }
         if ( SDL_WaitEvent( &event ) ) {
             switch ( event.type ) {
             case SDL_QUIT:
-                engine->quit();
+                engine.quit();
                 break;
             }
-            if ( event.type == engine->logicEventType
+            if ( event.type == engine.logicEventType
                  && event.user.code == ENEMY_SHOT ) {
                 shot = enemyShot.get();
                 if ( myGrid.get()[ shot.first ][ shot.second ] == logic::SHIP_NOT_SHOT ) {
@@ -221,13 +221,13 @@ void PlayScene::runScene(GameEngine *engine)
                 }
                 getShot = false;
             }
-            if ( engine->logic.checkIfGameEnds() == logic::WON ) {
-                engine->pushScene( WonScene::Instance() );
+            if ( engine.logic.checkIfGameEnds() == logic::WON ) {
+                engine.pushScene( WonScene::Instance() );
                 if ( enemyShot.valid() ) {
                     enemyShot.get();
                 }
-            } else if ( engine->logic.checkIfGameEnds() == logic::LOST ) {
-                engine->pushScene( LostScene::Instance() );
+            } else if ( engine.logic.checkIfGameEnds() == logic::LOST ) {
+                engine.pushScene( LostScene::Instance() );
                 if ( enemyShot.valid() ) {
                     enemyShot.get();
                 }

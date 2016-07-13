@@ -12,7 +12,7 @@ private:
     SDL_Event event;
     std::vector<MenuItem> menu;
 
-    void renderMenu(GameEngine *engine);
+    void renderMenu(GameEngine &engine);
 
 friend GameEngine;
 
@@ -28,11 +28,11 @@ void pause() override
 {
 
 }
-void resume(GameEngine *engine) override
+void resume(GameEngine &engine) override
 {
     renderMenu( engine );
 }
-    void runScene(GameEngine *engine) override;
+    void runScene(GameEngine &engine) override;
     void clean() override
     {
         for ( MenuItem &item : menu ) {
@@ -40,11 +40,11 @@ void resume(GameEngine *engine) override
             SDL_DestroyTexture( item.notSelected );
         }
     }
-    void init(GameEngine *engine) override;
+    void init(GameEngine &engine) override;
 
-    static MenuScene* Instance()
+    static MenuScene& Instance()
     {
-        return &menuScene;
+        return menuScene;
     }
 };
 

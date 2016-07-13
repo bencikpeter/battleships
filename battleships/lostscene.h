@@ -11,28 +11,28 @@ private:
     SDL_Event event;
     MenuItem* title;
 
-    void renderTitle(GameEngine *engine);
+    void renderTitle(GameEngine &engine);
 
 protected:
     LostScene() {}
 
     // GameScene interface
 public:
-    void init(GameEngine *engine) override;
+    void init(GameEngine &engine) override;
     void clean() override
     {
         delete title;
     }
     void pause() override {}
-    void resume(GameEngine *) override
+    void resume(GameEngine &) override
     {
 
     }
-    void runScene(GameEngine *engine) override;
+    void runScene(GameEngine &engine) override;
 
-    static LostScene* Instance()
+    static LostScene& Instance()
     {
-        return &lostScene;
+        return lostScene;
     }
 };
 

@@ -29,8 +29,8 @@ private:
     bool getLayout;
     bool getShot;
 
-    void renderMyGrid(GameEngine *engine);
-    void renderEnemyGrid(GameEngine *engine);
+    void renderMyGrid(GameEngine &engine);
+    void renderEnemyGrid(GameEngine &engine);
     std::pair< int, int > getMousePos()
     {
         int x;
@@ -41,12 +41,12 @@ private:
         coordinates.second = y / cellHeight;
         return coordinates;
     }
-    void renderCell(GameEngine *engine, SDL_Rect *rect , int r, int g, int b)
+    void renderCell(GameEngine &engine, SDL_Rect *rect , int r, int g, int b)
     {
-        engine->renderer.setRenderColor( r, g, b, 255 );
-        SDL_RenderFillRect( engine->renderer.renderer, rect );
-        engine->renderer.setRenderColor( 0, 0, 0, 255 );
-        SDL_RenderDrawRect( engine->renderer.renderer, rect );
+        engine.renderer.setRenderColor( r, g, b, 255 );
+        SDL_RenderFillRect( engine.renderer.renderer, rect );
+        engine.renderer.setRenderColor( 0, 0, 0, 255 );
+        SDL_RenderDrawRect( engine.renderer.renderer, rect );
     }
 
 protected:
@@ -57,7 +57,7 @@ protected:
 
     // GameScene interface
 public:
-    void init(GameEngine *engine) override;
+    void init(GameEngine &engine) override;
     void clean() override
     {
 
@@ -66,15 +66,15 @@ public:
     {
 
     }
-    void resume(GameEngine *) override
+    void resume(GameEngine &) override
     {
 
     }
-    void runScene(GameEngine *engine) override;
+    void runScene(GameEngine &engine) override;
 
-    static PlayScene* Instance()
+    static PlayScene& Instance()
     {
-        return &playScene;
+        return playScene;
     }
 };
 

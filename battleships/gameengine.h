@@ -34,13 +34,13 @@ public:
      * @brief changeScene changes the scene on the top of the stack
      * @param scene
      */
-    void changeScene( GameScene* scene );
+    void changeScene( GameScene& scene );
 
     /**
      * @brief pushScene pushes the scene to the stack
      * @param scene
      */
-    void pushScene( GameScene* scene );
+    void pushScene( GameScene& scene );
 
     /**
      * @brief popScene pops scene from the stack

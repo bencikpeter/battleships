@@ -14,9 +14,9 @@ private:
     std::vector<MenuItem> menu;
     std::future<bool> connectionSuccesful;
 
-    void renderConnectScene(GameEngine *engine);
+    void renderConnectScene(GameEngine &engine);
 
-    void renderText( GameEngine *engine );
+    void renderText( GameEngine &engine );
 
 
 protected:
@@ -31,20 +31,20 @@ public:
     {
         SDL_StopTextInput();
     }
-    void resume(GameEngine *) override
+    void resume(GameEngine &) override
     {
         SDL_StartTextInput();
     }
-    void runScene(GameEngine *engine) override;
-    void init(GameEngine *engine) override;
+    void runScene(GameEngine &engine) override;
+    void init(GameEngine &engine) override;
     void clean() override
     {
         SDL_StopTextInput();
     }
 
-    static ConnectScene* Instance()
+    static ConnectScene& Instance()
     {
-        return &connectScene;
+        return connectScene;
     }
 };
 

@@ -14,7 +14,7 @@ private:
     std::future<bool> host;
 
 
-    void renderHostScene(GameEngine *engine);
+    void renderHostScene(GameEngine &engine);
 
 protected:
     HostScene()
@@ -24,7 +24,7 @@ protected:
 
     // GameScene interface
 public:
-    void init(GameEngine *engine) override;
+    void init(GameEngine &engine) override;
     void clean() override
     {
         MenuItem &waiting = menu[0];
@@ -38,15 +38,15 @@ public:
     {
 
     }
-    void resume(GameEngine *) override
+    void resume(GameEngine &) override
     {
 
     }
-    void runScene(GameEngine *engine) override;
+    void runScene(GameEngine &engine) override;
 
-    static HostScene* Instance()
+    static HostScene& Instance()
     {
-        return &hostScene;
+        return hostScene;
     }
 };
 

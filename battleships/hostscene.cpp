@@ -5,64 +5,64 @@
 
 HostScene HostScene::hostScene;
 
-void HostScene::renderHostScene(GameEngine *engine)
+void HostScene::renderHostScene(GameEngine &engine)
 {
-    engine->renderer.clear();
+    engine.renderer.clear();
 
     MenuItem &waiting = menu[0];
     MenuItem &back = menu[1];
 
     int height;
-    SDL_GetRendererOutputSize( engine->renderer.renderer, nullptr, &height );
+    SDL_GetRendererOutputSize( engine.renderer.renderer, nullptr, &height );
     int i = height / 2 - menu[0].rect.h;
 
     for ( MenuItem &item : menu ) {
-        engine->renderer.computeRect( item.notSelected, i, item.rect );
+        engine.renderer.computeRect( item.notSelected, i, item.rect );
         i += item.rect.h;
     }
-    engine->renderer.renderCopy( waiting.notSelected, waiting.rect );
+    engine.renderer.renderCopy( waiting.notSelected, waiting.rect );
 
     if ( back.isSelected() ) {
-        engine->renderer.renderCopy( back.selected, back.rect );
+        engine.renderer.renderCopy( back.selected, back.rect );
     } else {
-        engine->renderer.renderCopy( back.notSelected, back.rect );
+        engine.renderer.renderCopy( back.notSelected, back.rect );
     }
 
-    engine->renderer.render();
+    engine.renderer.render();
 }
 
 
 
-void HostScene::init(GameEngine *engine)
+void HostScene::init(GameEngine &engine)
 {
     host = std::async( std::launch::async,
                        &logic::Logic::host,
-                       &engine->logic );
-    menu.push_back( MenuItem( "Waiting for other player", engine->font ) );
-    menu.push_back( MenuItem( "Back", engine->font ) );
+                       &engine.logic );
+    menu.push_back( MenuItem( "Waiting for other player", engine.font ) );
+    menu.push_back( MenuItem( "Back", engine.font ) );
 
     MenuItem &waiting = menu[0];
     MenuItem &back = menu[1];
 
-    SDL_Surface *waitingNotSelected = TTF_RenderText_Blended( engine->font,
+    SDL_Surface *waitingNotSelected = TTF_RenderText_Blended( engine.font,
                                                               waiting.text.c_str(),
                                                               { 255, 255, 255, 255 } );
 
-    SDL_Surface *backNotSelected = TTF_RenderText_Blended( engine->font,
+    SDL_Surface *backNotSelected = TTF_RenderText_Blended( engine.font,
                                                            back.text.c_str(),
                                                            { 255, 255, 255, 255 } );
 
-    SDL_Surface *backSelected = TTF_RenderText_Blended( engine->font,
+    SDL_Surface *backSelected = TTF_RenderText_Blended( engine.font,
                                                         back.text.c_str(),
                                                         { 0, 255, 0, 255 } );
 
-    waiting.notSelected = SDL_CreateTextureFromSurface( engine->renderer.renderer,
+    waiting.notSelected = SDL_CreateTextureFromSurface( engine.renderer.renderer,
                                                         waitingNotSelected );
 
-    back.notSelected = SDL_CreateTextureFromSurface( engine->renderer.renderer,
+    back.notSelected = SDL_CreateTextureFromSurface( engine.renderer.renderer,
                                                      backNotSelected );
 
-    back.selected = SDL_CreateTextureFromSurface( engine->renderer.renderer,
+    back.selected = SDL_CreateTextureFromSurface( engine.renderer.renderer,
                                                   backSelected );
 
     SDL_FreeSurface ( waitingNotSelected );
@@ -75,28 +75,28 @@ void HostScene::init(GameEngine *engine)
     renderHostScene( engine );
 }
 
-void HostScene::runScene(GameEngine *engine)
+void HostScene::runScene(GameEngine &engine)
 {
     if( SDL_WaitEvent( &event ) ) {
         switch ( event.type ){
         case SDL_QUIT:
-            engine->quit();
+            engine.quit();
             break;
         case SDL_MOUSEMOTION:
             renderHostScene( engine );
             break;
         case SDL_MOUSEBUTTONDOWN:
             if ( menu[1].isSelected() ) {
-                engine->logic.resetSocket();
-                engine->popScene();
+                engine.logic.resetSocket();
+                engine.popScene();
             }
             break;
         }
-        if ( engine->logicEventType == event.type && event.user.code == HOST ) {
+        if ( engine.logicEventType == event.type && event.user.code == HOST ) {
             // niekto sa pripojil na siet
             if ( host.get() ) {
                 LogicEvent ev( HOST ); // event for PlayScene to recognize, that this client is hosting the game
-                engine->pushScene( PlayScene::Instance() );
+                engine.pushScene( PlayScene::Instance() );
             }
         }
     }

@@ -51,21 +51,21 @@ GameEngine::GameEngine( const char* title, int width, int height )
     running = true;
 }
 
-void GameEngine::changeScene(GameScene *scene) {
+void GameEngine::changeScene(GameScene &scene) {
     if ( !scenes.empty() ) {
         scenes.top()->clean();
         scenes.pop();
     }
-    scene->init( this );
-    scenes.push( scene );
+    scene.init( *this );
+    scenes.push( &scene );
 }
 
-void GameEngine::pushScene(GameScene *scene) {
+void GameEngine::pushScene(GameScene &scene) {
     if ( !scenes.empty() ) {
         scenes.top()->pause();
     }
-    scene->init( this );
-    scenes.push( scene );
+    scene.init( *this );
+    scenes.push( &scene );
 }
 
 void GameEngine::popScene() {
@@ -75,10 +75,10 @@ void GameEngine::popScene() {
     }
 
     if ( !scenes.empty() ) {
-        scenes.top()->resume( this );
+        scenes.top()->resume( *this );
     }
 }
 
 void GameEngine::runScene() {
-    scenes.top()->runScene( this );
+    scenes.top()->runScene( *this );
 }

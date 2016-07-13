@@ -11,19 +11,19 @@ protected:
 
     virtual ~GameScene() {}
 public:
-    virtual void init( GameEngine *engine ) = 0;
+    virtual void init( GameEngine &engine ) = 0;
 
     virtual void clean() = 0;
 
     virtual void pause() = 0;
 
-    virtual void resume( GameEngine *engine ) = 0;
+    virtual void resume( GameEngine &engine ) = 0;
 
-    virtual void runScene( GameEngine *engine ) = 0;
+    virtual void runScene( GameEngine &engine ) = 0;
 
-    void changeState( GameEngine *engine, GameScene *scene )
+    void changeState( GameEngine &engine, GameScene &scene )
     {
-        engine->changeScene( scene );
+        engine.changeScene( scene );
     }
 
     GameScene( GameScene& other) = delete;

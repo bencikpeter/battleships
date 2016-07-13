@@ -4,32 +4,32 @@
 
 ConnectScene ConnectScene::connectScene;
 
-void ConnectScene::renderConnectScene(GameEngine *engine)
+void ConnectScene::renderConnectScene(GameEngine &engine)
 {
-    engine->renderer.clear();
+    engine.renderer.clear();
     renderText( engine );
     int width;
     int height;
-    SDL_GetRendererOutputSize( engine->renderer.renderer, &width, &height );
+    SDL_GetRendererOutputSize( engine.renderer.renderer, &width, &height );
     int offset = height / 4;
     int i = 0;
     for ( MenuItem &item : menu ) {
-        engine->renderer.computeRect( item.notSelected, i, item.rect );
+        engine.renderer.computeRect( item.notSelected, i, item.rect );
         i += offset;
-        engine->renderer.renderCopy( item.notSelected, item.rect );
+        engine.renderer.renderCopy( item.notSelected, item.rect );
     }
 
     for ( int i = 2; i < 4; ++i ) {
         if ( menu[i].isSelected() ) {
-            engine->renderer.renderCopy( menu[i].selected, menu[i].rect );
+            engine.renderer.renderCopy( menu[i].selected, menu[i].rect );
         } else {
-            engine->renderer.renderCopy( menu[i].notSelected, menu[i].rect );
+            engine.renderer.renderCopy( menu[i].notSelected, menu[i].rect );
         }
     }
-    engine->renderer.render();
+    engine.renderer.render();
 }
 
-void ConnectScene::renderText(GameEngine *engine)
+void ConnectScene::renderText(GameEngine &engine)
 {
     MenuItem &text = menu[1];
 
@@ -42,38 +42,38 @@ void ConnectScene::renderText(GameEngine *engine)
         text.selected = nullptr;
     }
 
-    SDL_Surface *notSelected = TTF_RenderText_Blended( engine->font,
+    SDL_Surface *notSelected = TTF_RenderText_Blended( engine.font,
                                                        text.text.c_str(),
                                                        { 255, 255, 255, 255 } );
 
-    text.notSelected = SDL_CreateTextureFromSurface( engine->renderer.renderer,
+    text.notSelected = SDL_CreateTextureFromSurface( engine.renderer.renderer,
                                                      notSelected );
 
     SDL_FreeSurface( notSelected );
     text.computeDimmensions();
 }
 
-void ConnectScene::runScene(GameEngine *engine)
+void ConnectScene::runScene(GameEngine &engine)
 {
     std::string &inputText = menu[1].text;
 
     if ( SDL_WaitEvent( &event ) ) {
         switch ( event.type ) {
         case SDL_QUIT:
-            engine->quit();
+            engine.quit();
             break;
         case SDL_MOUSEMOTION:
             renderConnectScene( engine );
             break;
         case SDL_MOUSEBUTTONDOWN:
             if ( menu[2].isSelected() ) {
-                engine->popScene();
+                engine.popScene();
             }
             if ( menu[3].isSelected() ) {
-                if ( engine->logic.isIpValid( inputText ) ) {
+                if ( engine.logic.isIpValid( inputText ) ) {
                     connectionSuccesful = std::async( std::launch::async,
                                                       &logic::Logic::connect,
-                                                      &engine->logic,
+                                                      &engine.logic,
                                                       inputText );
                 }
             }
@@ -89,31 +89,31 @@ void ConnectScene::runScene(GameEngine *engine)
             renderConnectScene( engine );
             break;
         }
-        if ( engine->logicEventType == event.type && event.user.code == CONNECT ) {
+        if ( engine.logicEventType == event.type && event.user.code == CONNECT ) {
             if ( connectionSuccesful.get() ){
                 // na niekoho som sa pripojil
                 LogicEvent ev( CONNECT ); // event for PlayScene to recognize, that this client is connected to host
-                engine->pushScene( PlayScene::Instance() );
+                engine.pushScene( PlayScene::Instance() );
             }
         }
     }
 }
 
-void ConnectScene::init(GameEngine *engine)
+void ConnectScene::init(GameEngine &engine)
 {
     SDL_StartTextInput();
 
-    menu.push_back( MenuItem( "Enter IP address", engine->font ) );
-    menu.push_back( MenuItem( "", engine->font ) );
-    menu.push_back( MenuItem( "Back", engine->font ) );
-    menu.push_back( MenuItem( "Join", engine->font ) );
+    menu.push_back( MenuItem( "Enter IP address", engine.font ) );
+    menu.push_back( MenuItem( "", engine.font ) );
+    menu.push_back( MenuItem( "Back", engine.font ) );
+    menu.push_back( MenuItem( "Join", engine.font ) );
 
     for ( MenuItem &item : menu ) {
-        SDL_Surface *notSelected = TTF_RenderText_Blended( engine->font,
+        SDL_Surface *notSelected = TTF_RenderText_Blended( engine.font,
                                                            item.text.c_str(),
                                                            { 255, 255, 255, 255 } );
 
-        item.notSelected = SDL_CreateTextureFromSurface( engine->renderer.renderer,
+        item.notSelected = SDL_CreateTextureFromSurface( engine.renderer.renderer,
                                                          notSelected );
 
         SDL_FreeSurface( notSelected );
@@ -121,11 +121,11 @@ void ConnectScene::init(GameEngine *engine)
     }
 
     for ( int i = 2; i < 4; ++i ) {
-        SDL_Surface *selected = TTF_RenderText_Blended( engine->font,
+        SDL_Surface *selected = TTF_RenderText_Blended( engine.font,
                                                         menu[i].text.c_str(),
                                                         { 0, 255, 0, 255 } );
 
-        menu[i].selected = SDL_CreateTextureFromSurface( engine->renderer.renderer,
+        menu[i].selected = SDL_CreateTextureFromSurface( engine.renderer.renderer,
                                                          selected );
         SDL_FreeSurface( selected );
     }
